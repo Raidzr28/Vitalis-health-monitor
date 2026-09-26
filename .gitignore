@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────
+# Secrets & credentials — never commit these
+# ─────────────────────────────────────────────────────────────
+
+# Machine-local SDK path (contains your Windows username) and any keys put here
+local.properties
+
+# API keys (USDA FoodData Central, Maps, etc.). Keep them in one of these files
+# and read them via BuildConfig — never hard-code them in Kotlin sources.
+secrets.properties
+secret.properties
+apikeys.properties
+*.env
+.env
+.env.*
+!.env.example
+
+# App signing — losing control of the release keystore means you can never
+# update the app on Play again, so it must never be public
+*.jks
+*.keystore
+*.p12
+*.pk8
+*.pem
+*.key
+keystore.properties
+signing.properties
+
+# Firebase / Google services / Play Console service accounts
+google-services.json
+GoogleService-Info.plist
+*service-account*.json
+play-store-credentials.json
+
+# ─────────────────────────────────────────────────────────────
+# Build output & caches
+# ─────────────────────────────────────────────────────────────
+.gradle/
+.kotlin/
+build/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
+
+# Built apps (share them via GitHub Releases, not the repo)
+*.apk
+*.aab
+*.ap_
+*.dex
+output-metadata.json
+
+# ─────────────────────────────────────────────────────────────
+# IDE & OS files
+# ─────────────────────────────────────────────────────────────
+.idea/
+*.iml
+.vscode/
+.fleet/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─────────────────────────────────────────────────────────────
+# Local tooling (contains absolute paths with your username)
+# ─────────────────────────────────────────────────────────────
+graphify-out/
+.claude/settings.local.json
+
+# Logs
+*.log

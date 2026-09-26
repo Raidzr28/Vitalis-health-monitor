@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;color:var(--fg);font-family:Manrope,sans-serif;font-feature-settings:'tnum'">
+
+<sc-if value="{{ isOnbGoal }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:70px 24px 32px;display:flex;flex-direction:column;gap:22px;min-height:844px">
+    <div style="display:flex;gap:6px">
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--track)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--track)"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--cy)">LANGKAH 1 DARI 3</div>
+      <div style="font-size:33px;font-weight:800;letter-spacing:-1.2px;line-height:1.1">Apa tujuanmu?</div>
+      <div style="font-size:14px;color:var(--fgd);text-wrap:pretty">Kami hitung target kalori dan makro harianmu dari sini.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:22px;background:var(--gfs);border:1.5px solid var(--cy);box-shadow:0 0 0 4px rgba(0,210,255,.12),0 10px 30px -14px rgba(0,0,0,.5);backdrop-filter:blur(22px)">
+        <div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(150deg,var(--cy),var(--up));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:#fff">↓</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:17px;font-weight:700">Turun berat badan</div>
+          <div style="font-size:12.5px;color:var(--fgd)">Defisit kalori terkontrol</div>
+        </div>
+        <div style="width:22px;height:22px;border-radius:99px;background:var(--cy);display:flex;align-items:center;justify-content:center;color:#04121c;font-size:13px;font-weight:800">✓</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:22px;background:var(--gfu);border:1px solid var(--gb);backdrop-filter:blur(16px)">
+        <div style="width:44px;height:44px;border-radius:14px;background:var(--gf);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:var(--fgd)">=</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:17px;font-weight:700">Maintenance</div>
+          <div style="font-size:12.5px;color:var(--fgd)">Jaga berat, tingkatkan fitness</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;padding:18px;border-radius:22px;background:var(--gfu);border:1px solid var(--gb);backdrop-filter:blur(16px)">
+        <div style="width:44px;height:44px;border-radius:14px;background:var(--gf);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;color:var(--fgd)">↑</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:17px;font-weight:700">Naik massa otot</div>
+          <div style="font-size:12.5px;color:var(--fgd)">Surplus terukur</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--fgm)">TARGET RATE · KG / WEEK</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+        <div style="padding:14px 0;border-radius:16px;text-align:center;font-size:15px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">0,25</div>
+        <div style="padding:14px 0;border-radius:16px;text-align:center;font-size:15px;font-weight:800;background:var(--gfs);border:1.5px solid var(--cy);color:var(--fg)">0,5</div>
+        <div style="padding:14px 0;border-radius:16px;text-align:center;font-size:15px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">0,75</div>
+        <div style="padding:14px 0;border-radius:16px;text-align:center;font-size:15px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">1,0</div>
+      </div>
+      <div style="font-size:12px;color:var(--fgm);text-wrap:pretty">Defisit dibatasi maksimal 25% dari TDEE demi keamanan.</div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="padding:18px;border-radius:20px;text-align:center;font-size:16.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);box-shadow:0 14px 34px -14px rgba(0,210,255,.7)">Lanjut</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isOnbBody }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:70px 24px 32px;display:flex;flex-direction:column;gap:20px;min-height:844px">
+    <div style="display:flex;gap:6px">
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--track)"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.4px;color:var(--cy)">LANGKAH 2 DARI 3</div>
+      <div style="font-size:33px;font-weight:800;letter-spacing:-1.2px;line-height:1.1">Profil fisikmu</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;padding:20px;border-radius:24px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(22px)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">SEX</div>
+      <div style="display:flex;gap:8px;padding:5px;border-radius:14px;background:var(--gfu);border:1px solid var(--gb)">
+        <div style="flex:1;padding:11px 0;text-align:center;border-radius:10px;font-size:14.5px;font-weight:700;background:var(--fg);color:var(--bg1)">Pria</div>
+        <div style="flex:1;padding:11px 0;text-align:center;border-radius:10px;font-size:14.5px;font-weight:600;color:var(--fgd)">Wanita</div>
+      </div>
+      <div style="height:1px;background:var(--gb)"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:14.5px;font-weight:600;color:var(--fgd)">Tanggal lahir</div>
+        <div style="font-size:16px;font-weight:700">12 Mar 1998 · 28 th</div>
+      </div>
+      <div style="height:1px;background:var(--gb)"></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div style="font-size:14.5px;font-weight:600;color:var(--fgd)">Tinggi</div>
+          <div style="font-size:26px;font-weight:800;letter-spacing:-1px">175 <span style="font-size:13px;font-weight:600;color:var(--fgm)">cm</span></div>
+        </div>
+        <div style="position:relative;height:6px;border-radius:9px;background:var(--track)">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:62%;border-radius:9px;background:linear-gradient(90deg,var(--up),var(--cy))"></div>
+          <div style="position:absolute;left:62%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:99px;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.45)"></div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--gb)"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:14.5px;font-weight:600;color:var(--fgd)">Berat sekarang</div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:34px;height:34px;border-radius:11px;background:var(--gfu);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--fgd)">−</div>
+          <div style="font-size:26px;font-weight:800;letter-spacing:-1px;min-width:74px;text-align:center">88,0</div>
+          <div style="width:34px;height:34px;border-radius:11px;background:var(--gfu);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--fgd)">+</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:20px;border-radius:24px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(22px)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">ACTIVITY LEVEL</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ levels }}" as="l" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-radius:14px;background:{{ l.bg }};border:{{ l.br }}">
+            <div style="display:flex;flex-direction:column;gap:2px">
+              <div style="font-size:14.5px;font-weight:700">{{ l.name }}</div>
+              <div style="font-size:11.5px;color:var(--fgd)">{{ l.desc }}</div>
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--fgm)">×{{ l.factor }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--fgm);text-wrap:pretty">Opsional nanti: lingkar pinggang, body fat %, resting heart rate.</div>
+    <div style="flex:1"></div>
+    <div style="padding:18px;border-radius:20px;text-align:center;font-size:16.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);box-shadow:0 14px 34px -14px rgba(0,210,255,.7)">Hitung targetku</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isOnbResult }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:70px 24px 32px;display:flex;flex-direction:column;gap:18px;min-height:844px">
+    <div style="display:flex;gap:6px">
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+      <div style="height:4px;flex:1;border-radius:9px;background:var(--cy)"></div>
+    </div>
+    <div style="font-size:29px;font-weight:800;letter-spacing:-1.1px;line-height:1.15;margin-top:6px">Target harianmu<br>sudah siap, Rangga</div>
+    <div style="padding:26px 22px;border-radius:26px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(26px);display:flex;flex-direction:column;gap:6px;align-items:center;box-shadow:0 20px 46px -20px rgba(0,0,0,.55)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--fgm)">DAILY CALORIE TARGET</div>
+      <div style="display:flex;align-items:baseline;gap:8px"><div style="font-size:60px;font-weight:800;letter-spacing:-3px;line-height:1">1.980</div><div style="font-size:16px;font-weight:700;color:var(--fgd)">kkal</div></div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <div style="padding:7px 13px;border-radius:99px;font-size:12px;font-weight:700;background:rgba(0,210,255,.14);border:1px solid rgba(0,210,255,.4);color:var(--cy)">Defisit 550 kkal</div>
+        <div style="padding:7px 13px;border-radius:99px;font-size:12px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">−22% TDEE</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+      <div style="padding:16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px)">
+        <div style="font-size:10.5px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">BMR · MIFFLIN</div>
+        <div style="font-size:25px;font-weight:800;letter-spacing:-1px;margin-top:5px">1.839</div>
+      </div>
+      <div style="padding:16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px)">
+        <div style="font-size:10.5px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">TDEE · ×1,375</div>
+        <div style="font-size:25px;font-weight:800;letter-spacing:-1px;margin-top:5px">2.530</div>
+      </div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:13px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">MACRO TARGET</div>
+      <sc-for list="{{ macroTargets }}" as="m" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div style="font-size:14px;font-weight:700">{{ m.name }}</div>
+            <div style="font-size:13.5px;font-weight:700;color:var(--fgd)">{{ m.g }} g · {{ m.kcal }} kkal</div>
+          </div>
+          <div style="height:7px;border-radius:9px;background:var(--track);overflow:hidden"><div style="height:100%;width:{{ m.pct }};border-radius:9px;background:{{ m.color }}"></div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;gap:11px">
+      <div style="flex:1;padding:15px;border-radius:18px;background:var(--gfu);border:1px solid var(--gb);display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:10.5px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">STEPS</div>
+        <div style="font-size:19px;font-weight:800">10.000</div>
+      </div>
+      <div style="flex:1;padding:15px;border-radius:18px;background:var(--gfu);border:1px solid var(--gb);display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:10.5px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">WATER</div>
+        <div style="font-size:19px;font-weight:800">2.500 ml</div>
+      </div>
+    </div>
+    <div style="padding:15px;border-radius:18px;background:rgba(0,210,255,.10);border:1px solid rgba(0,210,255,.28);font-size:13px;color:var(--fgd);text-wrap:pretty"><b style="color:var(--fg)">75,0 kg</b> diperkirakan tercapai <b style="color:var(--fg)">14 Februari 2027</b> jika konsisten 0,5 kg/minggu.</div>
+    <div style="font-size:11px;color:var(--fgm);text-wrap:pretty">VITALIS adalah alat bantu kebugaran, bukan perangkat medis. Informasi ini tidak menggantikan saran tenaga kesehatan profesional.</div>
+    <div style="flex:1"></div>
+    <div style="padding:18px;border-radius:20px;text-align:center;font-size:16.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);box-shadow:0 14px 34px -14px rgba(0,210,255,.7)">Mulai pakai VITALIS</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:66px 20px 118px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-size:12.5px;color:var(--fgd);font-weight:600">Selamat pagi</div>
+        <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Rangga</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;border-radius:99px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px)">
+        <div style="width:9px;height:9px;border-radius:99px;background:var(--cal);animation:flame 1.8s ease-in-out infinite"></div>
+        <div style="font-size:14px;font-weight:800">12</div>
+        <div style="font-size:11.5px;color:var(--fgd);font-weight:600">hari</div>
+      </div>
+    </div>
+
+    <div style="padding:22px 20px;border-radius:28px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(26px);box-shadow:0 22px 48px -22px rgba(0,0,0,.6);display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:20px">
+        <div style="position:relative;width:164px;height:164px;flex-shrink:0">
+          <svg viewBox="0 0 164 164" style="width:164px;height:164px;transform:rotate(-90deg)">
+            <circle cx="82" cy="82" r="70" fill="none" stroke="var(--track)" stroke-width="11"></circle>
+            <circle cx="82" cy="82" r="56" fill="none" stroke="var(--track)" stroke-width="11"></circle>
+            <circle cx="82" cy="82" r="42" fill="none" stroke="var(--track)" stroke-width="11"></circle>
+            <circle cx="82" cy="82" r="70" fill="none" stroke="var(--cal)" stroke-width="11" stroke-linecap="round" stroke-dasharray="439.8" stroke-dashoffset="{{ ring1 }}"></circle>
+            <circle cx="82" cy="82" r="56" fill="none" stroke="var(--cy)" stroke-width="11" stroke-linecap="round" stroke-dasharray="351.9" stroke-dashoffset="86.5"></circle>
+            <circle cx="82" cy="82" r="42" fill="none" stroke="var(--pro)" stroke-width="11" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="46.4"></circle>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">
+            <div style="font-size:34px;font-weight:800;letter-spacing:-1.6px;line-height:1">{{ remaining }}</div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">KKAL SISA</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:13px;flex:1">
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:2px;background:var(--cal)"></div><div style="font-size:10.5px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">CALORIES</div></div>
+            <div style="font-size:16px;font-weight:800">{{ kcalIn }} <span style="font-size:12px;font-weight:600;color:var(--fgd)">/ 1.980</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:2px;background:var(--cy)"></div><div style="font-size:10.5px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">ACTIVE MIN</div></div>
+            <div style="font-size:16px;font-weight:800">42 <span style="font-size:12px;font-weight:600;color:var(--fgd)">/ 60</span></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="display:flex;align-items:center;gap:7px"><div style="width:8px;height:8px;border-radius:2px;background:var(--pro)"></div><div style="font-size:10.5px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">STEPS</div></div>
+            <div style="font-size:16px;font-weight:800">8.240 <span style="font-size:12px;font-weight:600;color:var(--fgd)">/ 10.000</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--gb)"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--fgd);font-weight:600">
+        <div>Masuk <b style="color:var(--fg)">{{ kcalIn }}</b></div>
+        <div>BMR <b style="color:var(--fg)">1.839</b></div>
+        <div>Olahraga net <b style="color:var(--ok)">+420</b></div>
+      </div>
+    </div>
+
+    <div style="padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">MACROS</div>
+        <div style="font-size:11.5px;font-weight:700;color:var(--cy)">Lihat detail</div>
+      </div>
+      <sc-for list="{{ macros }}" as="m" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div style="font-size:13px;font-weight:700">{{ m.name }}</div>
+            <div style="font-size:12.5px;font-weight:600;color:var(--fgd)">{{ m.now }} / {{ m.target }} g</div>
+          </div>
+          <div style="height:6px;border-radius:9px;background:var(--track);overflow:hidden"><div style="height:100%;width:{{ m.pct }};border-radius:9px;background:{{ m.color }}"></div></div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">MEALS</div>
+        <div style="font-size:11.5px;font-weight:700;color:var(--fgm)">tap untuk tambah</div>
+      </div>
+      <sc-for list="{{ meals }}" as="m" hint-placeholder-count="4">
+        <div onClick="{{ goSearch }}" style="display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px);cursor:pointer" style-hover="background:var(--gfs)">
+          <div style="width:38px;height:38px;border-radius:12px;background:{{ m.tint }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:{{ m.color }}">{{ m.initial }}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+            <div style="font-size:15px;font-weight:700">{{ m.name }}</div>
+            <div style="font-size:12px;color:var(--fgd)">{{ m.sub }}</div>
+          </div>
+          <div style="text-align:right;display:flex;flex-direction:column;gap:1px">
+            <div style="font-size:15.5px;font-weight:800">{{ m.kcal }}</div>
+            <div style="font-size:10px;font-weight:600;color:var(--fgm);letter-spacing:.6px">KKAL</div>
+          </div>
+          <div style="font-size:19px;color:var(--fgm);font-weight:600">+</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px)">
+      <div style="position:relative;width:62px;height:62px;flex-shrink:0">
+        <svg viewBox="0 0 62 62" style="width:62px;height:62px;transform:rotate(-90deg)">
+          <circle cx="31" cy="31" r="26" fill="none" stroke="var(--track)" stroke-width="7"></circle>
+          <circle cx="31" cy="31" r="26" fill="none" stroke="var(--carb)" stroke-width="7" stroke-linecap="round" stroke-dasharray="163.4" stroke-dashoffset="{{ waterRing }}"></circle>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800">{{ waterPct }}</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">WATER</div>
+        <div style="font-size:19px;font-weight:800">{{ waterL }} <span style="font-size:12px;font-weight:600;color:var(--fgd)">/ 2,5 L</span></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div onClick="{{ add250 }}" style="padding:11px 13px;border-radius:14px;background:var(--gfs);border:1px solid var(--gb);font-size:12.5px;font-weight:800;cursor:pointer" style-hover="border-color:var(--carb)">+250</div>
+        <div onClick="{{ add500 }}" style="padding:11px 13px;border-radius:14px;background:var(--gfs);border:1px solid var(--gb);font-size:12.5px;font-weight:800;cursor:pointer" style-hover="border-color:var(--carb)">+500</div>
+      </div>
+    </div>
+
+    <div style="padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:11px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="font-size:13.5px;font-weight:700">Level 14 · Silver</div>
+        <div style="font-size:12px;font-weight:700;color:var(--fgd)">4.820 / 6.100 XP</div>
+      </div>
+      <div style="position:relative;height:9px;border-radius:9px;background:var(--track);overflow:hidden">
+        <div style="height:100%;width:79%;border-radius:9px;background:linear-gradient(90deg,var(--up),var(--cy))"></div>
+        <div style="position:absolute;top:0;bottom:0;left:0;width:38%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shimmer 2.6s linear infinite"></div>
+      </div>
+      <div style="font-size:11.5px;color:var(--fgd)">+95 XP hari ini · lengkapi log makan malam untuk bonus +30</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDiary }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 118px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Diary</div>
+      <div onClick="{{ goBarcode }}" style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:99px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px);cursor:pointer">
+        <div style="display:flex;gap:2px;align-items:center">
+          <div style="width:2px;height:13px;background:var(--fg)"></div><div style="width:1px;height:13px;background:var(--fg)"></div><div style="width:3px;height:13px;background:var(--fg)"></div><div style="width:1px;height:13px;background:var(--fg)"></div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700">Scan</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:7px">
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 0;border-radius:16px;background:{{ d.bg }};border:{{ d.br }}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.6px;color:{{ d.dim }}">{{ d.d }}</div>
+          <div style="font-size:15px;font-weight:800;color:{{ d.fg }}">{{ d.n }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;padding:16px 18px;border-radius:22px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(24px)">
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:10px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">MASUK</div><div style="font-size:19px;font-weight:800">{{ kcalIn }}</div></div>
+      <div style="width:1px;background:var(--gb);margin:0 14px"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:10px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">KELUAR</div><div style="font-size:19px;font-weight:800">2.259</div></div>
+      <div style="width:1px;background:var(--gb);margin:0 14px"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px"><div style="font-size:10px;font-weight:600;letter-spacing:1.1px;color:var(--fgm)">SISA</div><div style="font-size:19px;font-weight:800;color:var(--ok)">{{ remaining }}</div></div>
+    </div>
+    <sc-for list="{{ diarySections }}" as="s" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0 4px">
+          <div style="font-size:14px;font-weight:800;letter-spacing:-.2px">{{ s.name }}</div>
+          <div style="font-size:12.5px;font-weight:700;color:var(--fgd)">{{ s.kcal }} kkal</div>
+        </div>
+        <div style="border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px);overflow:hidden">
+          <sc-for list="{{ s.items }}" as="it" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--gb)">
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+                <div style="font-size:14px;font-weight:700">{{ it.name }}</div>
+                <div style="font-size:11.5px;color:var(--fgd);font-family:'JetBrains Mono',monospace">{{ it.macro }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+                <div style="font-size:14.5px;font-weight:800">{{ it.kcal }}</div>
+                <div style="font-size:9.5px;font-weight:600;padding:2px 6px;border-radius:5px;background:var(--gfu);border:1px solid var(--gb);color:var(--fgm);letter-spacing:.5px">{{ it.src }}</div>
+              </div>
+            </div>
+          </sc-for>
+          <div onClick="{{ goSearch }}" style="display:flex;align-items:center;gap:9px;padding:13px 16px;cursor:pointer;color:var(--cy);font-size:13.5px;font-weight:700">
+            <div style="width:20px;height:20px;border-radius:7px;border:1px dashed var(--cy);display:flex;align-items:center;justify-content:center;font-size:13px">+</div>
+            Tambah makanan
+          </div>
+        </div>
+      </div>
+    </sc-for>
+    <div style="padding:15px 17px;border-radius:20px;background:var(--gfu);border:1px solid var(--gb);display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:13.5px;font-weight:700">Nutrition breakdown</div>
+      <div style="font-size:12.5px;font-weight:700;color:var(--cy)">Harian · Mingguan →</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isDiaryEmpty }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 118px;display:flex;flex-direction:column;gap:16px;min-height:844px">
+    <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Diary</div>
+    <div style="display:flex;gap:7px">
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 0;border-radius:16px;background:{{ d.bg }};border:{{ d.br }}">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.6px;color:{{ d.dim }}">{{ d.d }}</div>
+          <div style="font-size:15px;font-weight:800;color:{{ d.fg }}">{{ d.n }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:34px 12px">
+      <div style="width:170px;height:170px;border-radius:30px;background:var(--gfu);border:1px solid var(--gb);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
+        <svg width="170" height="170" style="position:absolute;inset:0;opacity:.5"><defs><pattern id="stp" width="9" height="9" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="4.5" height="9" fill="var(--gb)"></rect></pattern></defs><rect width="170" height="170" fill="url(#stp)"></rect></svg>
+        <div style="position:relative;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--fgd);text-align:center;line-height:1.6">empty-state<br>illustration</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+        <div style="font-size:21px;font-weight:800;letter-spacing:-.7px">Belum ada yang tercatat</div>
+        <div style="font-size:13.5px;color:var(--fgd);max-width:270px;text-wrap:pretty">Mulai dari scan barcode kemasan atau cari makanan. Butuh kurang dari 15 detik.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;padding:0 18px">
+        <div onClick="{{ goBarcode }}" style="padding:16px;border-radius:18px;text-align:center;font-size:15.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);cursor:pointer;box-shadow:0 14px 30px -14px rgba(0,210,255,.65)">Scan barcode</div>
+        <div onClick="{{ goSearch }}" style="padding:16px;border-radius:18px;text-align:center;font-size:15.5px;font-weight:700;background:var(--gf);border:1px solid var(--gb);cursor:pointer">Cari makanan</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isSearch }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 32px;display:flex;flex-direction:column;gap:14px;min-height:844px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div onClick="{{ goToday }}" style="font-size:22px;font-weight:700;cursor:pointer;color:var(--fgd)">←</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.8px">Tambah ke Makan Siang</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:11px;padding:14px 16px;border-radius:18px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(22px)">
+      <div style="width:14px;height:14px;border:2px solid var(--fgd);border-radius:99px"></div>
+      <div style="flex:1;font-size:15.5px;font-weight:700">nasi</div>
+      <div onClick="{{ goBarcode }}" style="display:flex;gap:2px;align-items:center;cursor:pointer">
+        <div style="width:2px;height:15px;background:var(--cy)"></div><div style="width:1px;height:15px;background:var(--cy)"></div><div style="width:3px;height:15px;background:var(--cy)"></div><div style="width:1px;height:15px;background:var(--cy)"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+        <div style="padding:9px 14px;border-radius:99px;font-size:12.5px;font-weight:700;background:{{ t.bg }};border:{{ t.br }};color:{{ t.fg }}">{{ t.name }}</div>
+      </sc-for>
+    </div>
+    <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm);padding-left:4px">5 HASIL · CACHE LOKAL + USDA + OPEN FOOD FACTS</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ results }}" as="r" hint-placeholder-count="5">
+        <div style="display:flex;align-items:center;gap:13px;padding:15px 16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px)">
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:14.5px;font-weight:700">{{ r.name }}</div>
+            <div style="font-size:11.5px;color:var(--fgd);font-family:'JetBrains Mono',monospace">{{ r.serving }} · {{ r.macro }}</div>
+            <div style="display:flex;gap:6px;margin-top:2px">
+              <div style="font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:6px;background:{{ r.srcBg }};border:1px solid {{ r.srcBr }};color:{{ r.srcFg }};letter-spacing:.5px">{{ r.src }}</div>
+              <div style="font-size:9.5px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--gfu);border:1px solid var(--gb);color:var(--fgm)">{{ r.note }}</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:9px">
+            <div style="font-size:16px;font-weight:800">{{ r.kcal }}</div>
+            <div onClick="{{ r.add }}" style="width:36px;height:36px;border-radius:12px;background:linear-gradient(140deg,var(--cy),var(--up));display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;color:#fff;cursor:pointer;box-shadow:0 8px 18px -8px rgba(0,210,255,.8)">+</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="font-size:11.5px;color:var(--fgm);text-wrap:pretty;padding:0 4px">Sumber data selalu ditampilkan. Nilai gizi bisa kamu override kapan saja.</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isBarcode }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:#05070C">
+    <div style="position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 34%,rgba(255,255,255,.10),transparent 70%),linear-gradient(180deg,#0B0F18,#05070C)"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:210px;background:linear-gradient(180deg,rgba(0,0,0,.55),transparent)"></div>
+    <div style="position:absolute;top:64px;left:20px;right:20px;display:flex;align-items:center;justify-content:space-between;color:#fff">
+      <div onClick="{{ goDiary }}" style="width:38px;height:38px;border-radius:99px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer">←</div>
+      <div style="font-size:15px;font-weight:700">Scan barcode</div>
+      <div style="width:38px;height:38px;border-radius:99px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.24);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;cursor:pointer">A</div>
+    </div>
+    <div style="position:absolute;top:250px;left:44px;width:302px;height:210px;border-radius:24px;overflow:hidden">
+      <div style="position:absolute;left:0;top:0;width:52px;height:52px;border-top:3px solid var(--cy);border-left:3px solid var(--cy);border-radius:22px 0 0 0"></div>
+      <div style="position:absolute;right:0;top:0;width:52px;height:52px;border-top:3px solid var(--cy);border-right:3px solid var(--cy);border-radius:0 22px 0 0"></div>
+      <div style="position:absolute;left:0;bottom:0;width:52px;height:52px;border-bottom:3px solid var(--cy);border-left:3px solid var(--cy);border-radius:0 0 0 22px"></div>
+      <div style="position:absolute;right:0;bottom:0;width:52px;height:52px;border-bottom:3px solid var(--cy);border-right:3px solid var(--cy);border-radius:0 0 22px 0"></div>
+      <div style="position:absolute;left:26px;right:26px;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--cy),transparent);box-shadow:0 0 18px 3px rgba(0,210,255,.7);animation:scanline 2.2s ease-in-out infinite alternate"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:3px;opacity:.85">
+        <div style="width:3px;height:74px;background:#fff"></div><div style="width:1px;height:74px;background:#fff"></div><div style="width:5px;height:74px;background:#fff"></div><div style="width:2px;height:74px;background:#fff"></div><div style="width:1px;height:74px;background:#fff"></div><div style="width:4px;height:74px;background:#fff"></div><div style="width:1px;height:74px;background:#fff"></div><div style="width:2px;height:74px;background:#fff"></div><div style="width:6px;height:74px;background:#fff"></div><div style="width:1px;height:74px;background:#fff"></div><div style="width:3px;height:74px;background:#fff"></div><div style="width:2px;height:74px;background:#fff"></div>
+      </div>
+    </div>
+    <div style="position:absolute;top:480px;left:0;right:0;text-align:center;color:rgba(255,255,255,.62);font-size:12.5px;font-weight:600">Arahkan ke barcode kemasan</div>
+    <div style="position:absolute;bottom:34px;left:18px;right:18px;padding:18px;border-radius:26px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(30px);box-shadow:0 24px 54px -20px rgba(0,0,0,.8);color:#fff;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:9px">
+        <div style="width:8px;height:8px;border-radius:99px;background:var(--ok);animation:pulse 1.4s ease-in-out infinite"></div>
+        <div style="font-size:10.5px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.75)">TERDETEKSI · 8998866200585</div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:14px">
+        <div style="width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.55);text-align:center">product<br>photo</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:16.5px;font-weight:800;letter-spacing:-.3px">Indomie Mi Goreng</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.7);font-family:'JetBrains Mono',monospace">1 bungkus 85 g · P 8 / K 54 / L 15</div>
+          <div style="font-size:9.5px;font-weight:700;padding:3px 7px;border-radius:6px;background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.45);color:#FBBF24;align-self:flex-start;letter-spacing:.5px">OPEN FOOD FACTS · CROWDSOURCED</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end"><div style="font-size:24px;font-weight:800;letter-spacing:-1px">380</div><div style="font-size:9.5px;color:rgba(255,255,255,.6);font-weight:600;letter-spacing:.6px">KKAL</div></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;padding:14px;border-radius:16px;text-align:center;font-size:14.5px;font-weight:700;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.26)">Koreksi nilai</div>
+        <div style="flex:1.3;padding:14px;border-radius:16px;text-align:center;font-size:14.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF)">Tambah</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isSport }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 118px;display:flex;flex-direction:column;gap:15px">
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Pilih olahraga</div>
+      <div style="font-size:13px;color:var(--fgd)">GPS siap · sampling menyesuaikan sport</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+      <sc-for list="{{ sports }}" as="s" hint-placeholder-count="10">
+        <div style="padding:16px;border-radius:20px;background:{{ s.bg }};border:{{ s.br }};backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:10px;min-height:104px">
+          <div style="width:34px;height:34px;border-radius:11px;background:{{ s.tint }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ s.color }}">{{ s.initial }}</div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <div style="font-size:14.5px;font-weight:700">{{ s.name }}</div>
+            <div style="font-size:10.5px;color:var(--fgd);font-family:'JetBrains Mono',monospace">{{ s.meta }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:16px 18px;border-radius:20px;background:var(--gfu);border:1px solid var(--gb);display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">TERAKHIR</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:14px;font-weight:700">Lari Pagi · Sudirman Loop</div><div style="font-size:11.5px;color:var(--fgd);font-family:'JetBrains Mono',monospace">Kamis · 8,12 km · 47:05 · 5:48 /km</div></div>
+        <div style="font-size:12.5px;font-weight:700;color:var(--cy)">Ulangi</div>
+      </div>
+    </div>
+    <div onClick="{{ goPerm }}" style="padding:19px;border-radius:20px;text-align:center;font-size:17px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);cursor:pointer;box-shadow:0 16px 38px -14px rgba(0,210,255,.7);letter-spacing:.3px">Mulai Running</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isPermission }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:70px 26px 40px;display:flex;flex-direction:column;min-height:844px">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;text-align:center">
+      <div style="width:112px;height:112px;border-radius:36px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(26px);display:flex;align-items:center;justify-content:center;box-shadow:0 24px 50px -22px rgba(0,0,0,.6)">
+        <div style="width:44px;height:44px;border-radius:99px;border:3px solid var(--cy);display:flex;align-items:center;justify-content:center"><div style="width:14px;height:14px;border-radius:99px;background:var(--cy)"></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div style="font-size:28px;font-weight:800;letter-spacing:-1.1px;line-height:1.2">Agar bisa merekam<br>rutemu</div>
+        <div style="font-size:14.5px;color:var(--fgd);line-height:1.65;text-wrap:pretty">VITALIS butuh akses lokasi untuk mengukur jarak, pace, dan elevasi saat kamu berolahraga.</div>
+        <div style="font-size:14.5px;color:var(--fgd);line-height:1.65;text-wrap:pretty">Lokasimu hanya disimpan di perangkat ini dan tidak pernah dibagikan tanpa izinmu.</div>
+      </div>
+      <div style="padding:13px 16px;border-radius:16px;background:var(--gfu);border:1px solid var(--gb);font-size:11.5px;color:var(--fgm);font-family:'JetBrains Mono',monospace;text-align:left;line-height:1.7">ACCESS_FINE_LOCATION<br>FOREGROUND_SERVICE_LOCATION</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div onClick="{{ goPrestart }}" style="padding:18px;border-radius:20px;text-align:center;font-size:16.5px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);cursor:pointer;box-shadow:0 14px 34px -14px rgba(0,210,255,.7)">Lanjutkan</div>
+      <div onClick="{{ goSport }}" style="padding:18px;border-radius:20px;text-align:center;font-size:16px;font-weight:700;color:var(--fgd);cursor:pointer">Nanti saja</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isPrestart }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 32px;display:flex;flex-direction:column;gap:14px;min-height:844px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div onClick="{{ goSport }}" style="font-size:22px;font-weight:700;color:var(--fgd);cursor:pointer">←</div>
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.8px">Running · Outdoor</div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(24px);display:flex;align-items:center;gap:15px">
+      <div style="display:flex;align-items:flex-end;gap:3px;height:26px">
+        <div style="width:5px;height:9px;border-radius:2px;background:var(--ok)"></div>
+        <div style="width:5px;height:15px;border-radius:2px;background:var(--ok)"></div>
+        <div style="width:5px;height:21px;border-radius:2px;background:var(--ok)"></div>
+        <div style="width:5px;height:26px;border-radius:2px;background:var(--ok)"></div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+        <div style="font-size:15.5px;font-weight:800">GPS Kuat</div>
+        <div style="font-size:12px;color:var(--fgd);font-family:'JetBrains Mono',monospace">akurasi 4 m · 11 satelit · barometer aktif</div>
+      </div>
+      <div style="font-size:11px;font-weight:700;padding:6px 10px;border-radius:99px;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.4);color:var(--ok)">SIAP</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">TARGET (OPSIONAL)</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div style="padding:12px 0;border-radius:14px;text-align:center;font-size:12px;font-weight:800;background:var(--gfs);border:1.5px solid var(--cy)">Bebas</div>
+        <div style="padding:12px 0;border-radius:14px;text-align:center;font-size:12px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">Jarak</div>
+        <div style="padding:12px 0;border-radius:14px;text-align:center;font-size:12px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">Waktu</div>
+        <div style="padding:12px 0;border-radius:14px;text-align:center;font-size:12px;font-weight:700;background:var(--gfu);border:1px solid var(--gb);color:var(--fgd)">Kalori</div>
+      </div>
+    </div>
+    <div style="border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);overflow:hidden">
+      <sc-for list="{{ toggles }}" as="t" hint-placeholder-count="4">
+        <div style="display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--gb)">
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:14.5px;font-weight:700">{{ t.name }}</div>
+            <div style="font-size:11.5px;color:var(--fgd)">{{ t.desc }}</div>
+          </div>
+          <div style="width:48px;height:28px;border-radius:99px;background:{{ t.trackBg }};border:1px solid var(--gb);position:relative;transition:all .2s">
+            <div style="position:absolute;top:2px;left:{{ t.knob }};width:22px;height:22px;border-radius:99px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:15px 17px;border-radius:20px;background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.3);font-size:12.5px;color:var(--fgd);text-wrap:pretty;line-height:1.6">Battery optimization perangkatmu agresif. Set VITALIS ke <b style="color:var(--fg)">unrestricted</b> agar rekaman tidak terputus.</div>
+    <div style="flex:1"></div>
+    <div onClick="{{ goLive }}" style="align-self:center;width:172px;height:172px;border-radius:99px;background:linear-gradient(140deg,var(--cy),var(--up));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;box-shadow:0 24px 60px -16px rgba(0,210,255,.75),inset 0 2px 0 rgba(255,255,255,.4)">
+      <div style="font-size:30px;font-weight:800;letter-spacing:2px;color:#fff">START</div>
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.4px;color:rgba(255,255,255,.8)">COUNTDOWN 3-2-1</div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--fgm)">Layar akan terkunci otomatis setelah 30 detik</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isLive }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:linear-gradient(180deg,#070A12,#0A0E1A)">
+    <div style="position:absolute;top:0;left:0;right:0;height:286px;overflow:hidden">
+      <div style="position:absolute;left:-62px;top:-118px;width:512px;height:512px">
+        <div style="position:absolute;inset:0;display:grid;grid-template-columns:256px 256px;grid-template-rows:256px 256px;opacity:var(--tileDark)">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26106/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26107/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26106/16952.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26107/16952.png" style="width:256px;height:256px" alt="">
+        </div>
+        <div style="position:absolute;inset:0;display:grid;grid-template-columns:256px 256px;grid-template-rows:256px 256px;opacity:var(--tileLight)">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26106/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26107/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26106/16952.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26107/16952.png" style="width:256px;height:256px" alt="">
+        </div>
+        <svg viewBox="0 0 512 512" style="position:absolute;inset:0;width:512px;height:512px">
+          <polyline points="150,380 168,300 196,232 236,176 292,140 340,132 372,152 378,196 356,250 320,296 272,330" fill="none" stroke="#00D2FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"></polyline>
+          <circle cx="150" cy="380" r="9" fill="#4ADE80" stroke="#0A0E1A" stroke-width="3"></circle>
+          <circle cx="272" cy="330" r="12" fill="#00D2FF" stroke="#fff" stroke-width="4"></circle>
+        </svg>
+      </div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,10,18,.55) 0%,transparent 30%,transparent 62%,#070A12 100%)"></div>
+      <div style="position:absolute;top:62px;right:18px;display:flex;flex-direction:column;gap:8px">
+        <div style="padding:8px 12px;border-radius:99px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(20px);font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:99px;background:#4ADE80"></div>GPS 4 m</div>
+        <div style="padding:8px 12px;border-radius:99px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);backdrop-filter:blur(20px);font-size:11px;font-weight:700;color:#fff">Auto-pause ON</div>
+      </div>
+    </div>
+    <div style="position:absolute;top:238px;left:0;right:0;bottom:0;padding:0 22px;display:flex;flex-direction:column;gap:16px;color:#F1F5FF">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+        <div style="font-size:10.5px;font-weight:600;letter-spacing:1.6px;color:rgba(241,245,255,.5)">DISTANCE · KM</div>
+        <div style="font-size:86px;font-weight:800;letter-spacing:-4.5px;line-height:1.02;font-feature-settings:'tnum'">5,42</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:31px;font-weight:500;letter-spacing:-1px">{{ timer }}</div>
+          <div style="font-size:13px;font-weight:600;color:rgba(241,245,255,.5)">elapsed</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ liveMetrics }}" as="m" hint-placeholder-count="6">
+          <div style="padding:14px 15px;border-radius:18px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:9.5px;font-weight:600;letter-spacing:1.2px;color:rgba(241,245,255,.45)">{{ m.label }}</div>
+            <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:23px;font-weight:800;letter-spacing:-1px">{{ m.value }}</div><div style="font-size:11px;font-weight:600;color:rgba(241,245,255,.5)">{{ m.unit }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px">
+        <div style="width:20px;height:5px;border-radius:9px;background:#00D2FF"></div>
+        <div style="width:5px;height:5px;border-radius:9px;background:rgba(255,255,255,.3)"></div>
+        <div style="width:5px;height:5px;border-radius:9px;background:rgba(255,255,255,.3)"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:18px;margin-top:2px">
+        <div style="width:66px;height:66px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.2);backdrop-filter:blur(18px);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;color:#F1F5FF">LAP<div style="font-size:9.5px;font-weight:600;color:rgba(241,245,255,.5)">5</div></div>
+        <div style="width:92px;height:92px;border-radius:99px;background:linear-gradient(140deg,#FBBF24,#F59E0B);display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 18px 44px -14px rgba(251,191,36,.7)">
+          <div style="width:9px;height:32px;border-radius:3px;background:#1a1204"></div><div style="width:9px;height:32px;border-radius:3px;background:#1a1204"></div>
+        </div>
+        <div onClick="{{ goSummary }}" style="width:66px;height:66px;border-radius:99px;background:rgba(248,113,113,.16);border:1px solid rgba(248,113,113,.45);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:center;cursor:pointer"><div style="width:22px;height:22px;border-radius:5px;background:#F87171"></div></div>
+      </div>
+      <div style="text-align:center;font-size:11.5px;color:rgba(241,245,255,.42);font-weight:600">Tahan 2 detik untuk membuka gembok layar</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isSummary }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:0 0 32px;display:flex;flex-direction:column;gap:0">
+    <div style="position:relative;height:330px;overflow:hidden">
+      <div style="position:absolute;left:-62px;top:-96px;width:512px;height:512px">
+        <div style="position:absolute;inset:0;display:grid;grid-template-columns:256px 256px;grid-template-rows:256px 256px;opacity:var(--tileDark)">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26106/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26107/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26106/16952.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/dark_all/15/26107/16952.png" style="width:256px;height:256px" alt="">
+        </div>
+        <div style="position:absolute;inset:0;display:grid;grid-template-columns:256px 256px;grid-template-rows:256px 256px;opacity:var(--tileLight)">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26106/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26107/16951.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26106/16952.png" style="width:256px;height:256px" alt="">
+          <img src="https://a.basemaps.cartocdn.com/light_all/15/26107/16952.png" style="width:256px;height:256px" alt="">
+        </div>
+        <svg viewBox="0 0 512 512" style="position:absolute;inset:0;width:512px;height:512px">
+          <polyline points="150,380 168,300 196,232 236,176 292,140 340,132 372,152 378,196 356,250 320,296 272,330 214,356 168,372 150,380" fill="none" stroke="#00D2FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"></polyline>
+          <circle cx="150" cy="380" r="10" fill="#4ADE80" stroke="#0A0E1A" stroke-width="3"></circle>
+          <circle cx="340" cy="132" r="8" fill="#FBBF24" stroke="#0A0E1A" stroke-width="3"></circle>
+        </svg>
+      </div>
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,26,.5) 0%,transparent 34%,transparent 55%,var(--bg1) 98%)"></div>
+      <div style="position:absolute;top:62px;left:18px;right:18px;display:flex;justify-content:space-between">
+        <div onClick="{{ goLive }}" style="width:38px;height:38px;border-radius:99px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer">←</div>
+        <div style="padding:9px 14px;border-radius:99px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(20px);font-size:12px;font-weight:700">Gradient: pace</div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:20px;right:20px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--cy)">RUNNING · 16 AGUSTUS, 05:42</div>
+        <div style="font-size:26px;font-weight:800;letter-spacing:-1.1px">Lari Pagi · Sudirman Loop</div>
+      </div>
+    </div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:13px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+        <sc-for list="{{ sumStats }}" as="s" hint-placeholder-count="4">
+          <div style="padding:16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:5px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">{{ s.label }}</div>
+            <div style="display:flex;align-items:baseline;gap:5px"><div style="font-size:27px;font-weight:800;letter-spacing:-1.2px">{{ s.value }}</div><div style="font-size:12px;font-weight:600;color:var(--fgd)">{{ s.unit }}</div></div>
+            <div style="font-size:11px;color:var(--fgm)">{{ s.sub }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="padding:16px 18px;border-radius:22px;background:rgba(0,210,255,.10);border:1px solid rgba(0,210,255,.3);display:flex;align-items:center;gap:14px">
+        <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(140deg,var(--cy),var(--up));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff">PR</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+          <div style="font-size:14.5px;font-weight:800">PR baru — Fastest 5K</div>
+          <div style="font-size:12px;color:var(--fgd);font-family:'JetBrains Mono',monospace">28:14 · lebih cepat 42 detik · +150 XP</div>
+        </div>
+      </div>
+      <div style="padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">SPLIT PER KM</div>
+          <div style="font-size:11px;color:var(--fgm);font-family:'JetBrains Mono',monospace">avg 5:48</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ splits }}" as="s" hint-placeholder-count="8">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:16px;font-size:11px;font-weight:700;color:var(--fgm);font-family:'JetBrains Mono',monospace">{{ s.km }}</div>
+              <div style="flex:1;height:16px;border-radius:5px;background:var(--track);overflow:hidden"><div style="height:100%;width:{{ s.w }};border-radius:5px;background:{{ s.color }}"></div></div>
+              <div style="width:42px;text-align:right;font-size:11.5px;font-weight:700;font-family:'JetBrains Mono',monospace">{{ s.pace }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">ELEVATION PROFILE</div>
+          <div style="font-size:11px;font-weight:700;color:var(--fgd);font-family:'JetBrains Mono',monospace">+62 m / −58 m</div>
+        </div>
+        <svg viewBox="0 0 320 74" style="width:100%;height:74px">
+          <polygon points="0,62 22,54 46,59 70,41 96,46 122,27 150,32 176,15 202,24 232,36 262,30 292,48 320,56 320,74 0,74" fill="rgba(0,210,255,.22)"></polygon>
+          <polyline points="0,62 22,54 46,59 70,41 96,46 122,27 150,32 176,15 202,24 232,36 262,30 292,48 320,56" fill="none" stroke="var(--cy)" stroke-width="2.4" stroke-linejoin="round"></polyline>
+        </svg>
+      </div>
+      <div style="padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:11px">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">ENERGI &amp; BEBAN</div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13.5px;font-weight:600;color:var(--fgd)">Kalori gross</div><div style="font-size:15px;font-weight:800">612 kkal</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13.5px;font-weight:600;color:var(--fgd)">BMR selama sesi</div><div style="font-size:15px;font-weight:700;color:var(--fgm)">−114 kkal</div></div>
+        <div style="height:1px;background:var(--gb)"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13.5px;font-weight:800">Net masuk budget</div><div style="font-size:17px;font-weight:800;color:var(--ok)">498 kkal</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:13.5px;font-weight:600;color:var(--fgd)">Training load (TRIMP)</div><div style="font-size:15px;font-weight:800">108</div></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="flex:1;padding:16px;border-radius:18px;text-align:center;font-size:14.5px;font-weight:700;background:var(--gf);border:1px solid var(--gb)">Bagikan</div>
+        <div style="flex:1;padding:16px;border-radius:18px;text-align:center;font-size:14.5px;font-weight:700;background:var(--gf);border:1px solid var(--gb);color:var(--dgr)">Hapus</div>
+        <div onClick="{{ goToday }}" style="flex:1.4;padding:16px;border-radius:18px;text-align:center;font-size:15px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);cursor:pointer">Simpan</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isProgress }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 118px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Progress</div>
+    <div style="padding:20px;border-radius:26px;background:var(--gfs);border:1px solid var(--gbt);backdrop-filter:blur(26px);box-shadow:0 20px 44px -22px rgba(0,0,0,.55);display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:18px">
+        <div style="position:relative;width:98px;height:98px;flex-shrink:0">
+          <svg viewBox="0 0 98 98" style="width:98px;height:98px;transform:rotate(-90deg)">
+            <circle cx="49" cy="49" r="42" fill="none" stroke="var(--track)" stroke-width="9"></circle>
+            <circle cx="49" cy="49" r="42" fill="none" stroke="var(--cy)" stroke-width="9" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="84.4"></circle>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:29px;font-weight:800;letter-spacing:-1.3px">68</div><div style="font-size:9px;font-weight:600;letter-spacing:1px;color:var(--fgm)">/ 100</div></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">HEALTH SCORE</div>
+          <div style="font-size:17px;font-weight:800;letter-spacing:-.4px;color:var(--ok)">Naik 4 poin dari minggu lalu</div>
+          <div style="font-size:12px;color:var(--fgd);text-wrap:pretty">Dorongan terbesar: konsistensi log makanan.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ pillars }}" as="p" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="width:96px;font-size:12px;font-weight:700">{{ p.name }}</div>
+            <div style="flex:1;height:7px;border-radius:9px;background:var(--track);overflow:hidden"><div style="height:100%;width:{{ p.w }};border-radius:9px;background:{{ p.color }}"></div></div>
+            <div style="width:52px;text-align:right;font-size:11px;font-weight:600;color:var(--fgm);font-family:'JetBrains Mono',monospace">{{ p.meta }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="font-size:10.5px;color:var(--fgm);text-wrap:pretty">Skor komposit indikatif, bukan diagnosis medis.</div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">WEIGHT · 12 WEEKS</div>
+          <div style="display:flex;align-items:baseline;gap:8px"><div style="font-size:32px;font-weight:800;letter-spacing:-1.5px">84,2</div><div style="font-size:13px;font-weight:700;color:var(--fgd)">kg</div><div style="font-size:13px;font-weight:800;color:var(--ok)">−3,8</div></div>
+        </div>
+        <div style="text-align:right;font-size:11.5px;color:var(--fgd);line-height:1.6">target<br><b style="color:var(--fg);font-size:14px">75,0 kg</b></div>
+      </div>
+      <svg viewBox="0 0 300 96" style="width:100%;height:96px">
+        <line x1="0" y1="82" x2="300" y2="82" stroke="var(--gb)" stroke-width="1" stroke-dasharray="4 5"></line>
+        <polyline points="0,14 27,20 54,17 81,31 108,27 135,42 162,38 189,53 216,49 243,63 270,58 300,66" fill="none" stroke="var(--cy)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        <circle cx="300" cy="66" r="5" fill="var(--cy)"></circle>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--fgm);font-family:'JetBrains Mono',monospace"><div>Mei</div><div>Jun</div><div>Jul</div><div>Agu</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px">
+      <sc-for list="{{ bodyMetrics }}" as="b" hint-placeholder-count="4">
+        <div style="padding:15px 16px;border-radius:20px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(18px);display:flex;flex-direction:column;gap:4px">
+          <div style="font-size:10px;font-weight:600;letter-spacing:1.2px;color:var(--fgm)">{{ b.label }}</div>
+          <div style="font-size:23px;font-weight:800;letter-spacing:-1px">{{ b.value }}</div>
+          <div style="font-size:11px;font-weight:700;color:{{ b.color }}">{{ b.tag }}</div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">CONSISTENCY · 5 MINGGU</div>
+        <div style="font-size:11.5px;font-weight:700;color:var(--fgd)">28 / 35 hari</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px">
+        <sc-for list="{{ heat }}" as="h" hint-placeholder-count="35">
+          <div style="aspect-ratio:1;border-radius:7px;background:{{ h.bg }};border:1px solid var(--gb)"></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:10.5px;color:var(--fgm)">
+        <div>rendah</div>
+        <div style="display:flex;gap:4px">
+          <div style="width:11px;height:11px;border-radius:4px;background:var(--track)"></div>
+          <div style="width:11px;height:11px;border-radius:4px;background:rgba(0,210,255,.3)"></div>
+          <div style="width:11px;height:11px;border-radius:4px;background:rgba(0,210,255,.6)"></div>
+          <div style="width:11px;height:11px;border-radius:4px;background:var(--cy)"></div>
+        </div>
+        <div>tinggi</div>
+      </div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">PERSONAL RECORDS · RUNNING</div>
+      <sc-for list="{{ prs }}" as="p" hint-placeholder-count="4">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;flex-direction:column;gap:2px"><div style="font-size:13.5px;font-weight:700">{{ p.name }}</div><div style="font-size:11px;color:var(--fgm)">{{ p.date }}</div></div>
+          <div style="font-size:16px;font-weight:800;font-family:'JetBrains Mono',monospace">{{ p.value }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 118px;display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Profil</div>
+      <div onClick="{{ goSettings }}" style="width:38px;height:38px;border-radius:99px;background:var(--gf);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(18px)">
+        <div style="width:15px;height:15px;border:2px solid var(--fgd);border-radius:99px"></div>
+      </div>
+    </div>
+    <div style="padding:22px;border-radius:26px;background:linear-gradient(140deg,rgba(108,92,231,.34),rgba(0,210,255,.20));border:1px solid var(--gbt);backdrop-filter:blur(26px);display:flex;flex-direction:column;gap:16px;box-shadow:0 22px 48px -22px rgba(0,0,0,.55)">
+      <div style="display:flex;align-items:center;gap:15px">
+        <div style="width:64px;height:64px;border-radius:22px;background:var(--gfs);border:1px solid var(--gbt);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800">R</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:20px;font-weight:800;letter-spacing:-.6px">Rangga</div>
+          <div style="font-size:12.5px;color:var(--fgd);font-weight:600">Level 14 · Silver Tier</div>
+        </div>
+        <div style="text-align:right"><div style="font-size:23px;font-weight:800;letter-spacing:-1px">4.820</div><div style="font-size:9.5px;font-weight:600;letter-spacing:1px;color:var(--fgm)">TOTAL XP</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="position:relative;height:10px;border-radius:9px;background:rgba(0,0,0,.25);overflow:hidden">
+          <div style="height:100%;width:79%;border-radius:9px;background:linear-gradient(90deg,#C0C8D8,#F3F6FF)"></div>
+          <div style="position:absolute;top:0;bottom:0;left:0;width:36%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);animation:shimmer 2.8s linear infinite"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;color:var(--fgd)"><div>1.280 XP ke Level 15</div><div>6.100 XP</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:11px">
+      <div style="flex:1;padding:17px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;align-items:center;gap:12px">
+        <div style="width:34px;height:34px;border-radius:99px;background:rgba(255,107,74,.18);display:flex;align-items:center;justify-content:center;animation:flame 1.9s ease-in-out infinite"><div style="width:12px;height:12px;border-radius:99px;background:var(--cal)"></div></div>
+        <div><div style="font-size:20px;font-weight:800;letter-spacing:-.8px">12</div><div style="font-size:10.5px;color:var(--fgm);font-weight:600;letter-spacing:.6px">HARI STREAK</div></div>
+      </div>
+      <div style="flex:1;padding:17px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;align-items:center;gap:12px">
+        <div style="width:34px;height:34px;border-radius:99px;background:rgba(0,210,255,.16);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;background:var(--cy);transform:rotate(45deg)"></div></div>
+        <div><div style="font-size:20px;font-weight:800;letter-spacing:-.8px">2</div><div style="font-size:10.5px;color:var(--fgm);font-weight:600;letter-spacing:.6px">STREAK FREEZE</div></div>
+      </div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">QUEST MINGGUAN</div>
+        <div style="font-size:11.5px;font-weight:700;color:var(--cy)">3 hari lagi</div>
+      </div>
+      <sc-for list="{{ quests }}" as="q" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div style="font-size:13.5px;font-weight:700">{{ q.name }}</div>
+            <div style="font-size:11.5px;font-weight:800;color:var(--up)">{{ q.xp }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1;height:7px;border-radius:9px;background:var(--track);overflow:hidden"><div style="height:100%;width:{{ q.w }};border-radius:9px;background:linear-gradient(90deg,var(--up),var(--cy))"></div></div>
+            <div style="width:78px;text-align:right;font-size:11px;color:var(--fgm);font-family:'JetBrains Mono',monospace">{{ q.meta }}</div>
+          </div>
+        </div>
+      </sc-for>
+      <div style="padding:12px;border-radius:14px;background:var(--gfu);border:1px dashed var(--gb);text-align:center;font-size:12px;font-weight:700;color:var(--fgd)">Selesaikan semua → bonus chest +500 XP</div>
+    </div>
+    <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm)">BADGE · 11 DARI 15</div>
+        <div style="font-size:11.5px;font-weight:700;color:var(--cy)">Semua</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+        <sc-for list="{{ badges }}" as="b" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+            <div style="width:56px;height:56px;border-radius:99px;background:{{ b.bg }};border:2px solid {{ b.br }};display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:{{ b.fg }};opacity:{{ b.op }}">{{ b.initial }}</div>
+            <div style="font-size:9.5px;font-weight:600;text-align:center;color:var(--fgd);line-height:1.3">{{ b.name }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:13px;padding:17px 18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px)">
+      <div style="width:36px;height:36px;border-radius:12px;background:rgba(52,211,153,.16);display:flex;align-items:center;justify-content:center"><div style="width:12px;height:12px;border-radius:99px;background:var(--ok)"></div></div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700">Health Connect</div><div style="font-size:11.5px;color:var(--fgd)">Tersambung · langkah, tidur, berat</div></div>
+      <div style="font-size:12px;font-weight:700;color:var(--fgm)">Kelola</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isAchievement }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;background:radial-gradient(70% 45% at 50% 32%,rgba(108,92,231,.4),transparent 70%),rgba(4,6,12,.86);backdrop-filter:blur(26px);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px;color:#F1F5FF">
+    <sc-for list="{{ confetti }}" as="c" hint-placeholder-count="16">
+      <div style="position:absolute;top:-40px;left:{{ c.left }};width:{{ c.size }};height:{{ c.size }};border-radius:2px;background:{{ c.color }};animation:fall {{ c.dur }} linear {{ c.delay }} infinite"></div>
+    </sc-for>
+    <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center">
+      <div style="position:relative;width:158px;height:158px;border-radius:99px;background:linear-gradient(140deg,#C0C8D8,#7B879C);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(255,255,255,.08),0 30px 70px -20px rgba(108,92,231,.9)">
+        <div style="width:120px;height:120px;border-radius:99px;border:3px solid rgba(255,255,255,.6);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+          <div style="font-size:30px;font-weight:800;letter-spacing:-1px;color:#0B1020">100</div>
+          <div style="font-size:11px;font-weight:800;letter-spacing:1.4px;color:rgba(11,16,32,.7)">KM</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:11.5px;font-weight:700;letter-spacing:2px;color:var(--cy)">BADGE TERBUKA</div>
+        <div style="font-size:31px;font-weight:800;letter-spacing:-1.3px">Road Warrior</div>
+        <div style="font-size:14.5px;color:rgba(241,245,255,.7);max-width:280px;text-wrap:pretty">Total 100 km berlari sejak kamu mulai. Tier Silver — Gold di 500 km.</div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <div style="padding:10px 16px;border-radius:99px;background:rgba(108,92,231,.28);border:1px solid rgba(108,92,231,.6);font-size:13px;font-weight:800">+150 XP</div>
+        <div style="padding:10px 16px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);font-size:13px;font-weight:700">Silver 2/4</div>
+      </div>
+    </div>
+    <div style="position:absolute;bottom:40px;left:26px;right:26px;display:flex;flex-direction:column;gap:11px">
+      <div style="padding:17px;border-radius:20px;text-align:center;font-size:16px;font-weight:800;color:#04121c;background:linear-gradient(100deg,var(--cy),#5FE1FF);box-shadow:0 14px 34px -14px rgba(0,210,255,.7)">Bagikan kartu</div>
+      <div onClick="{{ goProfile }}" style="padding:17px;border-radius:20px;text-align:center;font-size:15.5px;font-weight:700;color:rgba(241,245,255,.7);cursor:pointer">Lanjut</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+  <div style="padding:62px 20px 40px;display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div onClick="{{ goProfile }}" style="font-size:22px;font-weight:700;color:var(--fgd);cursor:pointer">←</div>
+      <div style="font-size:25px;font-weight:800;letter-spacing:-1px">Settings</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm);padding-left:4px">EFEK VISUAL</div>
+      <div style="padding:18px;border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:7px;padding:5px;border-radius:15px;background:var(--gfu);border:1px solid var(--gb)">
+          <div style="flex:1;padding:11px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:800;background:var(--fg);color:var(--bg1)">Penuh</div>
+          <div style="flex:1;padding:11px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--fgd)">Ringan</div>
+          <div style="flex:1;padding:11px 0;text-align:center;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--fgd)">Mati</div>
+        </div>
+        <div style="font-size:12px;color:var(--fgd);text-wrap:pretty">Blur penuh aktif. Otomatis turun ke Ringan jika battery saver aktif atau RAM di bawah 4 GB.</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm);padding-left:4px">UNIT &amp; STANDAR</div>
+      <div style="border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--gb)">
+          <div style="font-size:14.5px;font-weight:700">Sistem unit</div>
+          <div style="font-size:13.5px;font-weight:700;color:var(--fgd)">Metrik ›</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px;padding:16px 18px">
+          <div style="flex:1"><div style="font-size:14.5px;font-weight:700">Standar BMI Asia-Pasifik</div><div style="font-size:11.5px;color:var(--fgd)">Sekarang memakai standar WHO</div></div>
+          <div style="width:48px;height:28px;border-radius:99px;background:var(--track);border:1px solid var(--gb);position:relative"><div style="position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:99px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm);padding-left:4px">NOTIFIKASI</div>
+      <div style="border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);overflow:hidden">
+        <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:13px;padding:16px 18px;border-bottom:1px solid var(--gb)">
+            <div style="flex:1"><div style="font-size:14.5px;font-weight:700">{{ n.name }}</div><div style="font-size:11.5px;color:var(--fgd)">{{ n.desc }}</div></div>
+            <div style="width:48px;height:28px;border-radius:99px;background:{{ n.trackBg }};border:1px solid var(--gb);position:relative"><div style="position:absolute;top:2px;left:{{ n.knob }};width:22px;height:22px;border-radius:99px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35)"></div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:11px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--fgm);padding-left:4px">PRIVASI &amp; DATA</div>
+      <div style="border-radius:22px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px);overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--gb)">
+          <div><div style="font-size:14.5px;font-weight:700">Privacy zone</div><div style="font-size:11.5px;color:var(--fgd)">Radius 200 m disembunyikan · 1 titik</div></div>
+          <div style="font-size:13.5px;color:var(--fgm)">›</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--gb)">
+          <div><div style="font-size:14.5px;font-weight:700">Enkripsi database</div><div style="font-size:11.5px;color:var(--fgd)">SQLCipher · kunci di Keystore</div></div>
+          <div style="font-size:11px;font-weight:700;padding:5px 10px;border-radius:99px;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.4);color:var(--ok)">AKTIF</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--gb)">
+          <div style="font-size:14.5px;font-weight:700">Export data (JSON + GPX)</div>
+          <div style="font-size:13.5px;color:var(--fgm)">›</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px">
+          <div style="font-size:14.5px;font-weight:700;color:var(--dgr)">Hapus akun &amp; semua data</div>
+          <div style="font-size:13.5px;color:var(--dgr)">›</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:15px 17px;border-radius:20px;background:var(--gfu);border:1px solid var(--gb);font-size:11.5px;color:var(--fgm);text-wrap:pretty;line-height:1.7">VITALIS adalah alat bantu kebugaran dan bukan perangkat medis. Informasi yang disediakan tidak menggantikan saran, diagnosis, atau perawatan dari tenaga kesehatan profesional.</div>
+    <div style="text-align:center;font-size:11px;color:var(--fgm);font-family:'JetBrains Mono',monospace">VITALIS 1.0.0 (build 142) · min SDK 26</div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;bottom:0;left:0;right:0;height:96px;z-index:30">
+    <div style="position:absolute;inset:0;background:var(--gfs);border-top:1px solid var(--gbt);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px)"></div>
+    <div style="position:relative;height:100%;display:flex;align-items:flex-start;padding:12px 8px 0">
+      <div onClick="{{ goToday }}" style="{{ navToday }}">
+        <div style="width:19px;height:19px;border-radius:6px;border:2px solid currentColor"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.3px">Today</div>
+      </div>
+      <div onClick="{{ goDiary }}" style="{{ navDiary }}">
+        <div style="width:19px;height:19px;border-radius:3px;border:2px solid currentColor;border-left-width:5px"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.3px">Diary</div>
+      </div>
+      <div onClick="{{ goSport }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer">
+        <div style="width:58px;height:58px;border-radius:99px;background:linear-gradient(140deg,var(--cy),var(--up));display:flex;align-items:center;justify-content:center;margin-top:-30px;box-shadow:0 14px 32px -10px rgba(0,210,255,.8),inset 0 1.5px 0 rgba(255,255,255,.45)">
+          <div style="width:0;height:0;border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px"></div>
+        </div>
+        <div style="font-size:10px;font-weight:800;letter-spacing:.3px;color:var(--fg)">Track</div>
+      </div>
+      <div onClick="{{ goProgress }}" style="{{ navProgress }}">
+        <div style="display:flex;align-items:flex-end;gap:2.5px;height:19px"><div style="width:4px;height:9px;background:currentColor;border-radius:1px"></div><div style="width:4px;height:15px;background:currentColor;border-radius:1px"></div><div style="width:4px;height:19px;background:currentColor;border-radius:1px"></div></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.3px">Progress</div>
+      </div>
+      <div onClick="{{ goProfile }}" style="{{ navProfile }}">
+        <div style="width:19px;height:19px;border-radius:99px;border:2px solid currentColor"></div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.3px">Profil</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;onb-goal&quot;,&quot;onb-body&quot;,&quot;onb-result&quot;,&quot;today&quot;,&quot;diary&quot;,&quot;diary-empty&quot;,&quot;search&quot;,&quot;barcode&quot;,&quot;sport&quot;,&quot;permission&quot;,&quot;prestart&quot;,&quot;live&quot;,&quot;summary&quot;,&quot;progress&quot;,&quot;profile&quot;,&quot;achievement&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;today&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;pid&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;string&quot;},&quot;water&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1750,&quot;tsType&quot;:&quot;number&quot;},&quot;kcalIn&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:1450,&quot;tsType&quot;:&quot;number&quot;},&quot;protein&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:96,&quot;tsType&quot;:&quot;number&quot;},&quot;carbs&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:118,&quot;tsType&quot;:&quot;number&quot;},&quot;fat&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:52,&quot;tsType&quot;:&quot;number&quot;},&quot;elapsed&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:2322,&quot;tsType&quot;:&quot;number&quot;},&quot;extras&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;object[]&quot;},&quot;onNav&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(pid:string,screen:string)=&gt;void&quot;},&quot;onWater&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(ml:number)=&gt;void&quot;},&quot;onAdd&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(pid:string,item:object)=&gt;void&quot;}}">
+const NAV_SCREENS = ["today", "diary", "diary-empty", "sport", "progress", "profile"];
+const SRC = {
+  LOKAL: ["rgba(74,222,128,.16)", "rgba(74,222,128,.42)", "var(--pro)"],
+  USDA: ["rgba(96,165,250,.16)", "rgba(96,165,250,.42)", "var(--carb)"],
+  OFF: ["rgba(251,191,36,.16)", "rgba(251,191,36,.45)", "var(--fat)"],
+};
+const fmt = n => n.toLocaleString("id-ID");
+
+class Component extends DCLogic {
+  nav(screen) { return () => this.props.onNav && this.props.onNav(this.props.pid, screen); }
+
+  navItem(active) {
+    return "flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:4px;cursor:pointer;color:" +
+      (active ? "var(--cy)" : "var(--fgm)");
+  }
+
+  toggle(on) {
+    return { trackBg: on ? "rgba(0,210,255,.55)" : "var(--track)", knob: on ? "24px" : "2px" };
+  }
+
+  renderVals() {
+    const s = this.props.screen || "today";
+    const water = this.props.water ?? 1750;
+    const kcalIn = this.props.kcalIn ?? 1450;
+    const protein = this.props.protein ?? 96, carbs = this.props.carbs ?? 118, fat = this.props.fat ?? 52;
+    const extras = this.props.extras || [];
+    const el = this.props.elapsed ?? 2322;
+    const remaining = 1980 - kcalIn + 420;
+    const pct = (a, b) => Math.min(100, Math.round((a / b) * 100)) + "%";
+
+    const lunchBase = [
+      { name: "Ayam bakar kecap", macro: "1 potong · P 32 / K 2 / L 16", kcal: 285, src: "LOKAL" },
+      { name: "Nasi putih", macro: "200 g · P 5 / K 57 / L 0,6", kcal: 260, src: "USDA" },
+      { name: "Sayur asem", macro: "1 mangkuk · P 3 / K 12 / L 2", kcal: 75, src: "LOKAL" },
+    ].concat(extras.map(e => ({ name: e.name, macro: e.serving + " · P " + e.p + " / K " + e.c + " / L " + e.f, kcal: e.kcal, src: e.src })));
+    const lunchKcal = lunchBase.reduce((a, i) => a + i.kcal, 0);
+
+    const results = [
+      { name: "Nasi goreng spesial", serving: "1 piring 250 g", macro: "P 14 / K 68 / L 19", kcal: 512, src: "LOKAL", note: "kurasi TKPI", item: { name: "Nasi goreng spesial", serving: "1 piring 250 g", kcal: 512, p: 14, c: 68, f: 19, src: "LOKAL" } },
+      { name: "Nasi putih, kukus", serving: "100 g", macro: "P 2,7 / K 28 / L 0,3", kcal: 130, src: "USDA", note: "lab-verified", item: { name: "Nasi putih, kukus", serving: "100 g", kcal: 130, p: 3, c: 28, f: 0, src: "USDA" } },
+      { name: "Nasi uduk", serving: "1 porsi 200 g", macro: "P 6 / K 52 / L 8", kcal: 289, src: "LOKAL", note: "kurasi TKPI", item: { name: "Nasi uduk", serving: "1 porsi 200 g", kcal: 289, p: 6, c: 52, f: 8, src: "LOKAL" } },
+      { name: "Nasi merah", serving: "100 g", macro: "P 2,6 / K 23 / L 0,9", kcal: 111, src: "USDA", note: "lab-verified", item: { name: "Nasi merah", serving: "100 g", kcal: 111, p: 3, c: 23, f: 1, src: "USDA" } },
+      { name: "Nasi Goreng Instan (kemasan)", serving: "1 pack 85 g", macro: "P 8 / K 54 / L 15", kcal: 380, src: "OFF", note: "crowdsourced", item: { name: "Nasi Goreng Instan", serving: "1 pack 85 g", kcal: 380, p: 8, c: 54, f: 15, src: "OFF" } },
+    ].map(r => {
+      const c = SRC[r.src];
+      return { ...r, srcBg: c[0], srcBr: c[1], srcFg: c[2], add: () => this.props.onAdd && this.props.onAdd(this.props.pid, r.item) };
+    });
+
+    const dayNames = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"];
+    const days = dayNames.map((d, i) => {
+      const on = i === 3;
+      return {
+        d, n: 10 + i,
+        bg: on ? "var(--gfs)" : "var(--gfu)",
+        br: on ? "1.5px solid var(--cy)" : "1px solid var(--gb)",
+        fg: on ? "var(--fg)" : "var(--fgd)",
+        dim: on ? "var(--cy)" : "var(--fgm)",
+      };
+    });
+
+    const heatLevels = [2, 3, 1, 3, 0, 2, 3, 3, 2, 3, 1, 0, 3, 2, 1, 3, 3, 2, 0, 3, 3, 2, 3, 1, 3, 2, 3, 0, 3, 2, 3, 3, 1, 2, 3];
+    const heatBg = ["var(--track)", "rgba(0,210,255,.3)", "rgba(0,210,255,.6)", "var(--cy)"];
+
+    const sportList = [
+      ["Running", "RN", "1 s · pace, GAP", 1], ["Trail Run", "TR", "1 s · vertical", 0],
+      ["Walking", "WK", "3 s · langkah", 0], ["Hiking", "HK", "3 s · ascent", 0],
+      ["Cycling", "CY", "1 s · speed", 0], ["Mountain Bike", "MB", "1 s · grade", 0],
+      ["Trekking", "TK", "5 s · beban", 0], ["Mountain Climbing", "MC", "5 s · altitude", 0],
+      ["Horse Riding", "HR", "2 s · gait", 0], ["Open Water Swim", "SW", "1 s · /100 m", 0],
+    ];
+
+    const badgeDefs = [
+      ["Road Warrior", "100", "silver"], ["Climber", "1K", "bronze"], ["Habit Formed", "30", "gold"],
+      ["Hydrated", "H2O", "silver"], ["Sunrise Chaser", "AM", "bronze"], ["Macro Master", "PCF", "silver"],
+      ["Century", "500", "lock"], ["Everest", "8848", "lock"],
+    ];
+    const tiers = {
+      bronze: ["rgba(205,127,50,.2)", "rgba(205,127,50,.7)", "#E8A468", "1"],
+      silver: ["rgba(192,200,216,.2)", "rgba(192,200,216,.8)", "#DCE3F0", "1"],
+      gold: ["rgba(251,191,36,.2)", "rgba(251,191,36,.8)", "#FBBF24", "1"],
+      lock: ["var(--gfu)", "var(--gb)", "var(--fgm)", ".45"],
+    };
+
+    return {
+      isOnbGoal: s === "onb-goal", isOnbBody: s === "onb-body", isOnbResult: s === "onb-result",
+      isToday: s === "today", isDiary: s === "diary", isDiaryEmpty: s === "diary-empty",
+      isSearch: s === "search", isBarcode: s === "barcode", isSport: s === "sport",
+      isPermission: s === "permission", isPrestart: s === "prestart", isLive: s === "live",
+      isSummary: s === "summary", isProgress: s === "progress", isProfile: s === "profile",
+      isAchievement: s === "achievement", isSettings: s === "settings",
+      showNav: NAV_SCREENS.indexOf(s) !== -1,
+
+      kcalIn: fmt(kcalIn), remaining: fmt(remaining),
+      ring1: (439.8 * (1 - Math.min(1, kcalIn / 1980))).toFixed(1),
+      waterRing: (163.4 * (1 - water / 2500)).toFixed(1),
+      waterPct: Math.round((water / 2500) * 100) + "%",
+      waterL: (water / 1000).toFixed(2).replace(".", ","),
+      timer: [Math.floor(el / 3600), Math.floor(el / 60) % 60, el % 60].map(n => String(n).padStart(2, "0")).join(":"),
+
+      macros: [
+        { name: "Protein", now: protein, target: 176, pct: pct(protein, 176), color: "var(--pro)" },
+        { name: "Karbohidrat", now: carbs, target: 162, pct: pct(carbs, 162), color: "var(--carb)" },
+        { name: "Lemak", now: fat, target: 70, pct: pct(fat, 70), color: "var(--fat)" },
+      ],
+      macroTargets: [
+        { name: "Protein · 2,0 g/kg", g: 176, kcal: 704, pct: "78%", color: "var(--pro)" },
+        { name: "Karbohidrat", g: 162, kcal: 646, pct: "72%", color: "var(--carb)" },
+        { name: "Lemak · 0,8 g/kg", g: 70, kcal: 630, pct: "70%", color: "var(--fat)" },
+      ],
+      levels: [
+        { name: "Sedentary", desc: "Kerja duduk, hampir tidak olahraga", factor: "1,200", bg: "var(--gfu)", br: "1px solid var(--gb)" },
+        { name: "Lightly Active", desc: "Olahraga ringan 1–3×/minggu", factor: "1,375", bg: "var(--gfs)", br: "1.5px solid var(--cy)" },
+        { name: "Moderately Active", desc: "Olahraga sedang 3–5×/minggu", factor: "1,550", bg: "var(--gfu)", br: "1px solid var(--gb)" },
+      ],
+      meals: [
+        { name: "Sarapan", sub: "Nasi uduk + telur balado", kcal: "420", initial: "S", tint: "rgba(251,191,36,.16)", color: "var(--fat)" },
+        { name: "Makan Siang", sub: lunchBase.length + " item tercatat", kcal: fmt(lunchKcal), initial: "MS", tint: "rgba(0,210,255,.16)", color: "var(--cy)" },
+        { name: "Makan Malam", sub: "Belum ada · target ~550 kkal", kcal: "0", initial: "MM", tint: "rgba(108,92,231,.18)", color: "var(--up)" },
+        { name: "Snack", sub: "Pisang, yogurt, kopi susu", kcal: "410", initial: "SN", tint: "rgba(74,222,128,.16)", color: "var(--pro)" },
+      ],
+      diarySections: [
+        { name: "Sarapan", kcal: "420", items: [{ name: "Nasi uduk + telur balado", macro: "1 porsi · P 14 / K 58 / L 14", kcal: 420, src: "LOKAL" }] },
+        { name: "Makan Siang", kcal: fmt(lunchKcal), items: lunchBase },
+        { name: "Makan Malam", kcal: "0", items: [] },
+        { name: "Snack", kcal: "410", items: [
+          { name: "Pisang ambon", macro: "1 buah 120 g · P 1 / K 27 / L 0,4", kcal: 105, src: "USDA" },
+          { name: "Greek yogurt plain", macro: "150 g · P 15 / K 6 / L 4", kcal: 135, src: "OFF" },
+          { name: "Kopi susu gula aren", macro: "1 cup 250 ml · P 4 / K 26 / L 5", kcal: 170, src: "LOKAL" },
+        ] },
+      ],
+      days,
+      tabs: ["Semua", "Recent", "Frequent", "Custom"].map((name, i) => ({
+        name,
+        bg: i === 0 ? "var(--fg)" : "var(--gfu)",
+        br: i === 0 ? "1px solid var(--fg)" : "1px solid var(--gb)",
+        fg: i === 0 ? "var(--bg1)" : "var(--fgd)",
+      })),
+      results,
+      sports: sportList.map(([name, initial, meta, on]) => ({
+        name, initial, meta,
+        bg: on ? "var(--gfs)" : "var(--gfu)",
+        br: on ? "1.5px solid var(--cy)" : "1px solid var(--gb)",
+        tint: on ? "linear-gradient(140deg,var(--cy),var(--up))" : "var(--gf)",
+        color: on ? "#fff" : "var(--fgd)",
+      })),
+      toggles: [
+        { name: "Auto-pause", desc: "Pause jika < 0,5 m/s selama 5 s", ...this.toggle(true) },
+        { name: "Audio cue tiap 1 km", desc: "TTS: jarak, waktu, pace", ...this.toggle(true) },
+        { name: "Gembok layar", desc: "Cegah tap tak sengaja", ...this.toggle(true) },
+        { name: "Low battery mode", desc: "Turunkan sampling di bawah 15%", ...this.toggle(false) },
+      ],
+      liveMetrics: [
+        { label: "PACE SAAT INI", value: "5:41", unit: "/km" },
+        { label: "AVG PACE", value: "5:47", unit: "/km" },
+        { label: "KALORI NET", value: "412", unit: "kkal" },
+        { label: "ELEVATION", value: "+38", unit: "m" },
+        { label: "CADENCE", value: "168", unit: "spm" },
+        { label: "HEART RATE", value: "152", unit: "bpm" },
+      ],
+      sumStats: [
+        { label: "DISTANCE", value: "8,12", unit: "km", sub: "moving 46:12 / elapsed 47:05" },
+        { label: "AVG PACE", value: "5:48", unit: "/km", sub: "GAP 5:41 /km" },
+        { label: "KALORI NET", value: "498", unit: "kkal", sub: "gross 612 kkal" },
+        { label: "ASCENT", value: "62", unit: "m", sub: "max altitude 34 mdpl" },
+      ],
+      splits: [
+        ["1", "5:56", 84], ["2", "5:51", 88], ["3", "5:44", 94], ["4", "5:39", 100],
+        ["5", "5:42", 97], ["6", "5:49", 90], ["7", "5:54", 86], ["8", "5:47", 92],
+      ].map(([km, pace, w], i) => ({ km, pace, w: w + "%", color: i === 3 ? "var(--cy)" : "rgba(0,210,255,.45)" })),
+      pillars: [
+        { name: "Body Comp", w: "58%", meta: "25% · 58", color: "var(--cal)" },
+        { name: "Cardio", w: "74%", meta: "25% · 74", color: "var(--cy)" },
+        { name: "Activity", w: "81%", meta: "20% · 81", color: "var(--pro)" },
+        { name: "Nutrition", w: "66%", meta: "20% · 66", color: "var(--carb)" },
+        { name: "Recovery", w: "52%", meta: "10% · 52", color: "var(--fat)" },
+      ],
+      bodyMetrics: [
+        { label: "BMI · WHO", value: "27,5", tag: "Overweight", color: "var(--warn)" },
+        { label: "WHtR", value: "0,49", tag: "Sehat < 0,5", color: "var(--ok)" },
+        { label: "BODY FAT (EST.)", value: "24,1%", tag: "Deurenberg", color: "var(--fgm)" },
+        { label: "LEAN MASS", value: "63,9", tag: "kg · +0,4", color: "var(--ok)" },
+      ],
+      heat: heatLevels.map(l => ({ bg: heatBg[l] })),
+      prs: [
+        { name: "Fastest 5K", date: "16 Agu 2026 · hari ini", value: "28:14" },
+        { name: "Fastest 1K", date: "2 Agu 2026", value: "5:12" },
+        { name: "Longest Distance", date: "19 Jul 2026", value: "14,2 km" },
+        { name: "Most Elevation", date: "5 Jul 2026 · Bandung", value: "418 m" },
+      ],
+      quests: [
+        { name: "Tempuh 15 km minggu ini", xp: "+200 XP", w: "56%", meta: "8,4 / 15 km" },
+        { name: "Log makanan 5 hari", xp: "+150 XP", w: "60%", meta: "3 / 5 hari" },
+        { name: "Naik total 300 m elevasi", xp: "+180 XP", w: "40%", meta: "120 / 300 m" },
+        { name: "Capai target protein 4 hari", xp: "+150 XP", w: "50%", meta: "2 / 4 hari" },
+      ],
+      badges: badgeDefs.map(([name, initial, tier]) => {
+        const t = tiers[tier];
+        return { name, initial, bg: t[0], br: t[1], fg: t[2], op: t[3] };
+      }),
+      notifs: [
+        { name: "Reminder air tiap 2 jam", desc: "09:00 – 21:00", ...this.toggle(true) },
+        { name: "Reminder log makan", desc: "Sarapan, siang, malam", ...this.toggle(true) },
+        { name: "Ringkasan mingguan", desc: "Setiap Senin 07:00", ...this.toggle(false) },
+      ],
+      confetti: Array.from({ length: 18 }, (_, i) => ({
+        left: (i * 5.6 + (i % 3) * 4) + "%",
+        size: (5 + (i % 4) * 3) + "px",
+        color: ["#00D2FF", "#6C5CE7", "#FF6B9D", "#FBBF24", "#4ADE80"][i % 5],
+        dur: (2.4 + (i % 5) * 0.5).toFixed(1) + "s",
+        delay: ((i % 7) * 0.32).toFixed(2) + "s",
+      })),
+
+      navToday: this.navItem(s === "today"),
+      navDiary: this.navItem(s === "diary" || s === "diary-empty"),
+      navProgress: this.navItem(s === "progress"),
+      navProfile: this.navItem(s === "profile"),
+      goToday: this.nav("today"), goDiary: this.nav("diary"), goSearch: this.nav("search"),
+      goBarcode: this.nav("barcode"), goSport: this.nav("sport"), goPerm: this.nav("permission"),
+      goPrestart: this.nav("prestart"), goLive: this.nav("live"), goSummary: this.nav("summary"),
+      goProgress: this.nav("progress"), goProfile: this.nav("profile"), goSettings: this.nav("settings"),
+      add250: () => this.props.onWater && this.props.onWater(250),
+      add500: () => this.props.onWater && this.props.onWater(500),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

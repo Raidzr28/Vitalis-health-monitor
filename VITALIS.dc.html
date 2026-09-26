@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg1:#0A0E1A;--bg2:#131A2E;--bg3:#0F1420;
+--m1:rgba(0,210,255,.30);--m2:rgba(108,92,231,.30);--m3:rgba(255,107,157,.16);
+--gf:rgba(255,255,255,.08);--gfs:rgba(255,255,255,.14);--gfu:rgba(255,255,255,.05);
+--gb:rgba(255,255,255,.18);--gbt:rgba(255,255,255,.32);
+--fg:#F1F5FF;--fgd:rgba(241,245,255,.66);--fgm:rgba(241,245,255,.42);
+--cal:#FF6B4A;--pro:#4ADE80;--carb:#60A5FA;--fat:#FBBF24;--ok:#34D399;--warn:#FBBF24;--dgr:#F87171;--cy:#00D2FF;--up:#6C5CE7;
+--track:rgba(255,255,255,.10);--tileDark:1;--tileLight:0;--page:#06080F;--bezel1:#2C3348;--bezel2:#0A0D15;
+}
+[data-theme="light"]{
+--bg1:#F4F7FD;--bg2:#E7EEFA;--bg3:#EFF3FB;
+--m1:rgba(0,178,220,.22);--m2:rgba(108,92,231,.18);--m3:rgba(255,107,157,.14);
+--gf:rgba(255,255,255,.62);--gfs:rgba(255,255,255,.82);--gfu:rgba(255,255,255,.45);
+--gb:rgba(255,255,255,.9);--gbt:rgba(255,255,255,1);
+--fg:#0C1222;--fgd:rgba(12,18,34,.66);--fgm:rgba(12,18,34,.45);
+--cal:#F2542D;--pro:#16A34A;--carb:#2563EB;--fat:#D97706;--ok:#059669;--dgr:#DC2626;--cy:#0092C7;--up:#5B4BD6;
+--track:rgba(12,18,34,.10);--tileDark:0;--tileLight:1;--page:#DCE3EF;--bezel1:#F2F5FA;--bezel2:#AEB7C7;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page,#06080F);font-family:Manrope,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--cy);text-decoration:none}a:hover{color:var(--up)}
+@keyframes shimmer{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+@keyframes scanline{0%{transform:translateY(0)}100%{transform:translateY(210px)}}
+@keyframes flame{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.12);opacity:1}}
+@keyframes fall{0%{transform:translateY(-40px) rotate(0);opacity:0}12%{opacity:1}100%{transform:translateY(560px) rotate(540deg);opacity:0}}
+@keyframes pulse{0%,100%{opacity:.45;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="min-height:100%;padding:56px 64px 96px;background:var(--page);font-family:Manrope,system-ui,sans-serif;color:var(--fg)">
+
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;margin-bottom:52px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:13px;letter-spacing:3.4px;font-weight:600;color:var(--cy)">LIQUID GLASS UI · ANDROID</div>
+      <div style="font-size:62px;font-weight:800;letter-spacing:-2.4px;line-height:1">VITALIS</div>
+      <div style="font-size:15px;color:var(--fgd);max-width:640px;text-wrap:pretty">Dietary &amp; activity tracking. 17 layar hi-fi mengikuti spesifikasi v1.0 — data Rangga, 28, 88 → 75 kg, lari 3×/minggu.</div>
+    </div>
+    <div style="display:flex;gap:10px;padding:6px;border-radius:999px;background:var(--gf);border:1px solid var(--gb);backdrop-filter:blur(20px)">
+      <div onClick="{{ setDark }}" style="{{ darkBtn }}">Dark</div>
+      <div onClick="{{ setLight }}" style="{{ lightBtn }}">Light</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:72px 56px;align-items:flex-start">
+    <sc-for list="{{ phones }}" as="p" hint-placeholder-count="6">
+      <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;width:426px">
+        <div style="width:426px;height:880px;border-radius:54px;padding:18px;background:linear-gradient(155deg,var(--bezel1),var(--bezel2) 65%);box-shadow:0 46px 90px -26px rgba(0,0,0,.6),inset 0 1.5px 0 rgba(255,255,255,.22),inset 0 -1.5px 0 rgba(255,255,255,.06);position:relative">
+          <div style="position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:radial-gradient(120% 78% at 14% 0%,var(--m1),transparent 62%),radial-gradient(100% 70% at 88% 8%,var(--m2),transparent 66%),radial-gradient(94% 60% at 58% 102%,var(--m3),transparent 70%),linear-gradient(168deg,var(--bg1),var(--bg2) 56%,var(--bg3))">
+            <dc-import name="VitalisScreen" screen="{{ p.screen }}" pid="{{ p.id }}" water="{{ water }}" kcal-in="{{ kcalIn }}" protein="{{ protein }}" carbs="{{ carbs }}" fat="{{ fat }}" elapsed="{{ elapsed }}" extras="{{ extras }}" on-nav="{{ onNav }}" on-water="{{ onWater }}" on-add="{{ onAdd }}" hint-size="390px,844px"></dc-import>
+            <div style="position:absolute;top:0;left:0;right:0;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:14px;font-weight:700;color:var(--fg);pointer-events:none;z-index:40;text-shadow:0 1px 2px rgba(0,0,0,.25)">
+              <div>09:41</div>
+              <div style="display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600">
+                <div>5G</div>
+                <div style="display:flex;align-items:flex-end;gap:1.5px;height:10px">
+                  <div style="width:3px;height:4px;background:currentColor;border-radius:1px"></div>
+                  <div style="width:3px;height:6px;background:currentColor;border-radius:1px"></div>
+                  <div style="width:3px;height:8px;background:currentColor;border-radius:1px"></div>
+                  <div style="width:3px;height:10px;background:currentColor;border-radius:1px"></div>
+                </div>
+                <div style="width:22px;height:11px;border:1.5px solid currentColor;border-radius:3px;padding:1.5px"><div style="width:72%;height:100%;background:currentColor;border-radius:1px"></div></div>
+              </div>
+            </div>
+            <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:124px;height:4px;border-radius:99px;background:var(--fg);opacity:.28;z-index:41;pointer-events:none"></div>
+          </div>
+        </div>
+        <sc-if value="{{ showCaptions }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:5px;padding-left:6px">
+            <div style="font-size:16px;font-weight:700;letter-spacing:-.3px">{{ p.name }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--fgm);letter-spacing:.4px">{{ p.sec }}</div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-for>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;'dark'|'light'&quot;},&quot;showCaptions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;liveTimer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const SCREENS = [
+  ["onb-goal", "Onboarding — Tujuan", "§4.1 · step 1/3"],
+  ["onb-body", "Onboarding — Profil Fisik", "§4.1 · step 2/3"],
+  ["onb-result", "Onboarding — Hasil Kalkulasi", "§4.1 / §5.1–5.3"],
+  ["today", "Today · Dashboard", "§11.1 · triple ring"],
+  ["diary", "Diary", "§4.2 · food logging"],
+  ["diary-empty", "Diary — Empty State", "§11.2 · empty state"],
+  ["search", "Food Search", "§4.2.1 · layered source"],
+  ["barcode", "Barcode Scanner", "§4.2.1 · CameraX + ML Kit"],
+  ["sport", "Track — Sport Selector", "§4.5.1"],
+  ["permission", "Permission Priming", "§11.3"],
+  ["prestart", "Pre-Start", "§4.5.3"],
+  ["live", "Live GPS Tracking", "§4.5.2 · fullscreen"],
+  ["summary", "Activity Summary", "§4.5.2 · post-activity"],
+  ["progress", "Progress + Health Score", "§4.4.2"],
+  ["profile", "Profile · Gamifikasi", "§9"],
+  ["achievement", "Achievement Unlock", "§9.4 · badge"],
+  ["settings", "Settings", "§10.6 · efek visual"],
+];
+
+class Component extends DCLogic {
+  state = { theme: null, water: 1750, elapsed: 2322, extras: [], nav: {} };
+
+  componentDidMount() {
+    if (this.props.liveTimer !== false) {
+      this.t = setInterval(() => this.setState(s => ({ elapsed: s.elapsed + 1 })), 1000);
+    }
+  }
+  componentWillUnmount() { clearInterval(this.t); }
+
+  btn(active) {
+    return "padding:9px 22px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;user-select:none;transition:all .18s;" +
+      (active ? "background:var(--fg);color:var(--bg1)" : "color:var(--fgd)");
+  }
+
+  renderVals() {
+    const theme = this.state.theme || this.props.theme || "dark";
+    const extras = this.state.extras;
+    const add = extras.reduce((a, e) => a + e.kcal, 0);
+    return {
+      theme,
+      showCaptions: this.props.showCaptions !== false,
+      water: this.state.water,
+      elapsed: this.state.elapsed,
+      extras,
+      kcalIn: 1450 + add,
+      protein: 96 + extras.reduce((a, e) => a + e.p, 0),
+      carbs: 118 + extras.reduce((a, e) => a + e.c, 0),
+      fat: 52 + extras.reduce((a, e) => a + e.f, 0),
+      darkBtn: this.btn(theme === "dark"),
+      lightBtn: this.btn(theme === "light"),
+      setDark: () => this.setState({ theme: "dark" }),
+      setLight: () => this.setState({ theme: "light" }),
+      phones: SCREENS.map(([key, name, sec], i) => ({
+        id: "p" + i, name, sec, screen: this.state.nav["p" + i] || key,
+      })),
+      onNav: (pid, screen) => this.setState(s => ({ nav: { ...s.nav, [pid]: screen } })),
+      onWater: (ml) => this.setState(s => ({ water: Math.min(2500, s.water + ml) })),
+      onAdd: (pid, item) => this.setState(s => ({
+        extras: [...s.extras, item],
+        nav: { ...s.nav, [pid]: "today" },
+      })),
+    };
+  }
+}
+
+</script>
+</body>
+</html>
