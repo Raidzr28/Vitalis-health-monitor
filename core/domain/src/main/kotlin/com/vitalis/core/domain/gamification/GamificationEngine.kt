@@ -69,11 +69,14 @@ object LevelCurve {
  */
 object XpCalculator {
 
+    /** Below this a GPS session earns nothing, so start/stop tapping cannot farm the +50 base. */
+    const val MIN_GPS_ACTIVITY_METERS = 200.0
+
     fun forActivity(
         distanceMeters: Double,
         elevationGainM: Double,
         brokeRecord: Boolean,
-    ): List<XpAward> = buildList {
+    ): List<XpAward> = if (distanceMeters < MIN_GPS_ACTIVITY_METERS) emptyList() else buildList {
         add(XpAward(XpAction.COMPLETE_GPS_ACTIVITY, XpAction.COMPLETE_GPS_ACTIVITY.baseXp))
 
         val fullKm = floor(distanceMeters / 1000.0).toInt()
@@ -138,6 +141,36 @@ object XpCalculator {
     }
 
     fun total(awards: List<XpAward>): Int = awards.sumOf { it.amount }
+}
+
+/**
+ * Applies one batch of awards to the user's state (spec §9.2–9.3): records the streak day when
+ * the event qualifies, adds any streak-milestone bonus, and recomputes the level from total XP.
+ */
+object XpGranter {
+
+    /** [milestone] is the streak length just reached (7/30/100/365), for the celebration screen. */
+    data class Result(val state: GamificationState, val awards: List<XpAward>, val milestone: Int? = null) {
+        val xpGained: Int get() = XpCalculator.total(awards)
+    }
+
+    /**
+     * @param streakDay the day this event counts toward the streak, or null for events that do
+     *   not qualify (spec §9.3: only a logged meal or a workout keeps the streak alive)
+     */
+    fun grant(state: GamificationState, awards: List<XpAward>, streakDay: LocalDate?): Result {
+        var next = state
+        var all = awards
+        var milestone: Int? = null
+        if (streakDay != null) {
+            val streak = StreakCalculator.recordActivity(state, streakDay)
+            next = streak.state
+            milestone = streak.milestoneReached
+            milestone?.let(XpCalculator::forStreakMilestone)?.let { all = all + it }
+        }
+        val total = next.totalXp + XpCalculator.total(all)
+        return Result(next.copy(totalXp = total, level = LevelCurve.levelForXp(total)), all, milestone)
+    }
 }
 
 /**

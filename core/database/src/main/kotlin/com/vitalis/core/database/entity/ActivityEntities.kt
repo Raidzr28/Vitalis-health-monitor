@@ -183,3 +183,13 @@ fun LapEntity.toDomain() = Lap(
     avgHeartRate = avgHeartRate,
     isManual = isManual,
 )
+
+fun Lap.toEntity(sessionId: String) = LapEntity(
+    sessionId = sessionId,
+    lapIndex = index,
+    distanceMeters = distanceMeters,
+    durationSeconds = durationSeconds,
+    elevationGainM = elevationGainM,
+    avgHeartRate = avgHeartRate,
+    isManual = isManual,
+)

@@ -7,12 +7,14 @@ import com.vitalis.core.database.entity.DailyStatsEntity
 import com.vitalis.core.database.entity.toDomain
 import com.vitalis.core.database.entity.toEntity
 import com.vitalis.core.domain.energy.DailyTargetCalculator
+import com.vitalis.core.domain.gamification.StreakCalculator
 import com.vitalis.core.model.DailyTargets
 import com.vitalis.core.model.GamificationState
 import com.vitalis.core.model.MacroTargets
 import com.vitalis.core.model.UserProfile
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,7 +35,11 @@ class UserRepository @Inject constructor(private val db: VitalisDatabase) {
 
     val latestWeightKg: Flow<Float?> = bodyDao.observeLatestWeight().map { it?.weightKg }
 
-    val gamification: Flow<GamificationState> = gamificationDao.observe().map { it?.toDomain() ?: GamificationState() }
+    /** For display: a streak that has already lapsed shows as 0, not as its last stored value. */
+    val gamification: Flow<GamificationState> = gamificationDao.observe().map { row ->
+        val state = row?.toDomain() ?: GamificationState()
+        state.copy(currentStreakDays = StreakCalculator.currentStreak(state, StreakCalculator.effectiveDate(LocalDateTime.now())))
+    }
 
     /** Onboarding's last step (spec §4.1): profile, first weigh-in, today's targets, XP row — all or nothing. */
     suspend fun completeOnboarding(profile: UserProfile, weightKg: Float, today: LocalDate = LocalDate.now()) {

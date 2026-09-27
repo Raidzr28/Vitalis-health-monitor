@@ -155,7 +155,7 @@ fun ActivitySummaryScreen(state: SummaryUiState, onBack: () -> Unit, onShare: ()
             )
         }
 
-        VCard(spacing = 10.dp) {
+        if (state.splits.isNotEmpty()) VCard(spacing = 10.dp) {
             Text("Split per km", style = VitalisType.Title, color = VitalisColors.Ink, modifier = Modifier.padding(bottom = 4.dp))
             val fastest = state.splits.minOf { it.paceSecPerKm }
             val slowest = state.splits.maxOf { it.paceSecPerKm }

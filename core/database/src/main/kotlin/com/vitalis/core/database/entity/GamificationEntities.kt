@@ -64,6 +64,18 @@ data class XpLedgerEntity(
     val isSynced: Boolean = false,
 )
 
+/** A ledger row plus the session it paid for (null unless [referenceId] is `activity:<id>`). */
+data class XpHistoryRow(
+    val action: String,
+    val amount: Int,
+    val multiplier: Int,
+    val reason: String?,
+    val referenceId: String?,
+    val awardedAt: Instant,
+    val sportType: SportType?,
+    val distanceMeters: Double?,
+)
+
 @Entity(tableName = "achievement", indices = [Index("category")])
 data class AchievementEntity(
     @PrimaryKey val id: String,

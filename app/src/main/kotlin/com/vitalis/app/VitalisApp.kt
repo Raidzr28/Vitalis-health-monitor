@@ -4,11 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,23 +18,22 @@ import androidx.navigation.compose.rememberNavController
 import com.vitalis.core.designsystem.component.MainTab
 import com.vitalis.core.designsystem.component.VitalisTabBar
 import com.vitalis.core.designsystem.theme.VitalisColors
-import com.vitalis.core.model.GpsSignalQuality
 import com.vitalis.core.model.MealType
 import com.vitalis.core.model.SportType
 import com.vitalis.feature.dashboard.TodayRoute
 import com.vitalis.feature.diary.DiaryRoute
 import com.vitalis.feature.diary.FoodSearchRoute
 import com.vitalis.feature.onboarding.OnboardingRoute
+import com.vitalis.feature.profile.CelebrationOverlay
 import com.vitalis.feature.profile.ProfileRoute
+import com.vitalis.feature.profile.XpHistoryRoute
 import com.vitalis.feature.progress.ProgressScreen
 import com.vitalis.feature.progress.ProgressUiState
-import com.vitalis.feature.tracking.ActivitySummaryScreen
-import com.vitalis.feature.tracking.LiveTrackingScreen
-import com.vitalis.feature.tracking.LiveUiState
-import com.vitalis.feature.tracking.SportSelectScreen
-import com.vitalis.feature.tracking.SummaryUiState
+import com.vitalis.feature.tracking.ActivitySummaryRoute
+import com.vitalis.feature.tracking.LiveTrackingRoute
+import com.vitalis.feature.tracking.LocationPermissionRoute
+import com.vitalis.feature.tracking.SportSelectRoute
 import java.time.LocalDate
-import kotlinx.coroutines.delay
 
 private object Routes {
     const val ONBOARDING = "onboarding"
@@ -46,9 +43,12 @@ private object Routes {
     const val SPORT = "sport"
     const val LIVE = "live"
     const val SUMMARY = "summary"
+    const val LOCATION = "location-permission/{sport}"
     const val PROGRESS = "progress"
     const val PROFILE = "profile"
+    const val XP_HISTORY = "xp-history"
     fun search(meal: MealType, date: LocalDate = LocalDate.now()) = "search/${meal.name}/$date"
+    fun location(sport: SportType) = "location-permission/${sport.name}"
 }
 
 private val tabRoutes = mapOf(
@@ -65,10 +65,8 @@ fun VitalisApp(startAtOnboarding: Boolean) {
     val route = nav.currentBackStackEntryAsState().value?.destination?.route
     val currentTab = tabRoutes.entries.firstOrNull { it.value == route }?.key
 
-    // ponytail: tracking + progress still run on sample state until the GPS and body sprints.
+    // ponytail: progress still runs on sample state until the body sprint.
     var progress by remember { mutableStateOf(ProgressUiState.Sample) }
-    var sport by rememberSaveable { mutableStateOf(SportType.RUNNING) }
-    var live by remember { mutableStateOf(LiveUiState.Sample) }
 
     Box(Modifier.fillMaxSize().background(VitalisColors.Ground)) {
         NavHost(nav, startDestination = if (startAtOnboarding) Routes.ONBOARDING else Routes.TODAY) {
@@ -87,47 +85,42 @@ fun VitalisApp(startAtOnboarding: Boolean) {
             }
             composable(Routes.SEARCH) { FoodSearchRoute(onBack = { nav.popBackStack() }) }
             composable(Routes.SPORT) {
-                SportSelectScreen(
-                    selected = sport,
-                    lastUsed = emptyMap(),
-                    gps = GpsSignalQuality.EXCELLENT, gpsAccuracyM = 4,
-                    onSelect = { sport = it },
-                    onStart = { live = LiveUiState.Sample.copy(sport = sport); nav.navigate(Routes.LIVE) },
+                SportSelectRoute(
+                    onOpenLive = { nav.navigate(Routes.LIVE) { launchSingleTop = true } },
+                    onNeedPermission = { nav.navigate(Routes.location(it)) { launchSingleTop = true } },
+                )
+            }
+            composable(Routes.LOCATION) { entry ->
+                val sport = entry.arguments?.getString("sport")?.let { name -> SportType.entries.find { it.name == name } } ?: SportType.RUNNING
+                LocationPermissionRoute(
+                    sport = sport,
+                    onGranted = { nav.navigate(Routes.LIVE) { popUpTo(Routes.SPORT); launchSingleTop = true } },
+                    onBack = { nav.popBackStack() },
                 )
             }
             composable(Routes.LIVE) {
-                // ponytail: local ticker stands in for the tracking foreground service (spec §8.2).
-                LaunchedEffect(live.isPaused) {
-                    while (!live.isPaused) {
-                        delay(1000)
-                        live = live.copy(movingSeconds = live.movingSeconds + 1)
-                    }
-                }
-                LiveTrackingScreen(
-                    state = live,
-                    onTogglePause = { live = live.copy(isPaused = !live.isPaused) },
-                    onLap = {},
-                    onStop = { nav.navigate(Routes.SUMMARY) { popUpTo(Routes.SPORT) } },
-                    onLock = {},
+                LiveTrackingRoute(
+                    onStopped = { nav.navigate(Routes.SUMMARY) { popUpTo(Routes.SPORT) } },
+                    onBack = { nav.navigateTab(Routes.TODAY) },
                 )
             }
             composable(Routes.SUMMARY) {
-                val done = { nav.navigate(Routes.TODAY) { popUpTo(Routes.TODAY) { inclusive = true } } }
-                ActivitySummaryScreen(
-                    state = SummaryUiState.Sample.copy(movingSeconds = live.movingSeconds),
+                ActivitySummaryRoute(
                     onBack = { nav.popBackStack() },
-                    onShare = {},
-                    onSave = { done() },
-                    onDiscard = { done() },
+                    onDone = { nav.navigate(Routes.TODAY) { popUpTo(Routes.TODAY) { inclusive = true } } },
                 )
             }
             composable(Routes.PROGRESS) { ProgressScreen(progress) { progress = progress.copy(range = it) } }
-            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}) }
+            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}, onOpenXpHistory = { nav.navigate(Routes.XP_HISTORY) }) }
+            composable(Routes.XP_HISTORY) { XpHistoryRoute(onBack = { nav.popBackStack() }) }
         }
 
         if (currentTab != null) {
             VitalisTabBar(currentTab, onSelect = { nav.navigateTab(tabRoutes.getValue(it)) }, modifier = Modifier.align(Alignment.BottomCenter))
         }
+
+        // Above everything, tab bar included: level-ups and streak milestones from any screen.
+        CelebrationOverlay()
     }
 }
 

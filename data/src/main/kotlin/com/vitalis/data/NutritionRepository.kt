@@ -27,7 +27,10 @@ fun likePattern(query: String): String {
 }
 
 @Singleton
-class NutritionRepository @Inject constructor(private val db: VitalisDatabase) {
+class NutritionRepository @Inject constructor(
+    private val db: VitalisDatabase,
+    private val gamification: GamificationRepository,
+) {
     private val foodDao = db.foodDao()
     private val waterDao = db.waterDao()
 
@@ -51,6 +54,7 @@ class NutritionRepository @Inject constructor(private val db: VitalisDatabase) {
                     ).toEntity(),
                 ),
             )
+            gamification.onMealLogged(date, meal, foodDao.loggedMeals(date))
         }
     }
 
@@ -58,7 +62,10 @@ class NutritionRepository @Inject constructor(private val db: VitalisDatabase) {
     suspend fun copyMeal(from: LocalDate, to: LocalDate, meal: MealType): Int {
         val source = foodDao.logs(from, meal)
         val now = Instant.now()
-        foodDao.insertLogs(source.map { it.copy(id = UUID.randomUUID().toString(), date = to, loggedAt = now, isSynced = false) })
+        db.withTransaction {
+            foodDao.insertLogs(source.map { it.copy(id = UUID.randomUUID().toString(), date = to, loggedAt = now, isSynced = false) })
+            if (source.isNotEmpty()) gamification.onMealLogged(to, meal, foodDao.loggedMeals(to))
+        }
         return source.size
     }
 
@@ -95,6 +102,10 @@ class NutritionRepository @Inject constructor(private val db: VitalisDatabase) {
 
     suspend fun addWater(date: LocalDate, ml: Int) {
         require(ml in 1..5000) { "implausible water amount: $ml" }
-        waterDao.insert(WaterLogEntity(date = date, amountMl = ml, loggedAt = Instant.now()))
+        db.withTransaction {
+            waterDao.insert(WaterLogEntity(date = date, amountMl = ml, loggedAt = Instant.now()))
+            val target = db.userDao().dailyStats(date)?.waterTargetMl ?: 0
+            if (target > 0 && waterDao.totalMl(date) >= target) gamification.onWaterTargetHit(date)
+        }
     }
 }

@@ -44,8 +44,8 @@ class ProfileViewModel @Inject constructor(users: UserRepository) : ViewModel() 
 }
 
 @Composable
-fun ProfileRoute(onOpenSettings: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileRoute(onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val s = state ?: return Box(Modifier.fillMaxSize().background(VitalisColors.Ground))
-    ProfileScreen(s, onOpenSettings)
+    ProfileScreen(s, onOpenSettings, onOpenXpHistory)
 }

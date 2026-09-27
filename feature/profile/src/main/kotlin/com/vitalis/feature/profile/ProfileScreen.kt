@@ -1,6 +1,10 @@
 package com.vitalis.feature.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -110,7 +114,7 @@ private fun Tier.color(): Color = when (this) {
 private fun Tier.label(): String = name.lowercase().replaceFirstChar { it.uppercase() }
 
 @Composable
-fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit) {
+fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit = {}) {
     val tier = LevelTier.forLevel(state.level)
     Column(
         Modifier
@@ -144,6 +148,13 @@ fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit) {
                     Text("${Formatters.kcal(state.xpIntoLevel)} / ${Formatters.kcal(state.xpForLevel)} XP", style = VitalisType.Mono, color = VitalisColors.OnNightMuted)
                     Text("${Formatters.kcal(state.xpForLevel - state.xpIntoLevel)} XP lagi ke level ${state.level + 1}", style = VitalisType.Caption, color = VitalisColors.OnNightMuted)
                 }
+            }
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 44.dp).clip(RoundedCornerShape(12.dp)).clickable(onClick = onOpenXpHistory),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text("Riwayat XP", style = VitalisType.BodyStrong, color = VitalisColors.Lime, modifier = Modifier.weight(1f))
+                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, Modifier.size(20.dp), tint = VitalisColors.Lime)
             }
             HorizontalDivider(color = VitalisColors.NightTrack)
             Row {
@@ -204,5 +215,5 @@ private fun Badge(b: BadgeUi, modifier: Modifier) {
 @Preview(widthDp = 390, heightDp = 1180)
 @Composable
 private fun ProfilePreview() = VitalisTheme {
-    ProfileScreen(ProfileUiState.Sample) {}
+    ProfileScreen(ProfileUiState.Sample, onOpenSettings = {})
 }

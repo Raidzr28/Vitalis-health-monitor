@@ -127,6 +127,15 @@ class LocationPipeline(
         elevation.process(altitudeM)
     }
 
+    /**
+     * Breaks the route after a manual pause: whatever the user walked while paused must not
+     * be bridged as one straight segment on resume. Totals are kept.
+     */
+    fun startNewSegment() {
+        kalman.reset()
+        lastAccepted = null
+    }
+
     fun reset() {
         kalman.reset()
         elevation.reset()
