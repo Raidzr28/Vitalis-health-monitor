@@ -204,19 +204,30 @@ private fun WeekStrip(state: DiaryUiState, onSelectDate: (LocalDate) -> Unit) {
     }
 }
 
+/** Share of kcal from protein, carbs and fat (4/4/9 kcal per gram); all zero when nothing is logged. */
+fun macroShares(proteinG: Int, carbsG: Int, fatG: Int): List<Float> {
+    val kcal = listOf(proteinG * 4f, carbsG * 4f, fatG * 9f)
+    val total = kcal.sum()
+    return if (total <= 0f) listOf(0f, 0f, 0f) else kcal.map { it / total }
+}
+
+private val MacroColors = listOf(VitalisColors.Ink, VitalisColors.Orange, Color(0xFFC5E23A))
+
 @Composable
 private fun MacroSplit(p: Int, c: Int, f: Int) {
-    val kP = p * 4f; val kC = c * 4f; val kF = f * 9f
-    val total = (kP + kC + kF).coerceAtLeast(1f)
+    val shares = macroShares(p, c, f)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Row(Modifier.fillMaxWidth().height(10.dp).clip(CircleShape), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            Box(Modifier.weight(kP / total).fillMaxHeight().background(VitalisColors.Ink))
-            Box(Modifier.weight(kC / total).fillMaxHeight().background(VitalisColors.Orange))
-            Box(Modifier.weight(kF / total).fillMaxHeight().background(Color(0xFFC5E23A)))
+        Row(
+            Modifier.fillMaxWidth().height(10.dp).clip(CircleShape)
+                .then(if (shares.all { it == 0f }) Modifier.background(VitalisColors.Sunken) else Modifier),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            // weight() must be > 0: a macro with nothing logged gets no segment instead of a crash.
+            shares.forEachIndexed { i, share -> if (share > 0f) Box(Modifier.weight(share).fillMaxHeight().background(MacroColors[i])) }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            listOf("Protein" to p to kP, "Karbo" to c to kC, "Lemak" to f to kF).forEach { (lg, k) ->
-                Text("${lg.first} ${lg.second} g · ${Formatters.percent(k / total)}", style = VitalisType.Caption, color = VitalisColors.InkMuted)
+            listOf("Protein" to p, "Karbo" to c, "Lemak" to f).zip(shares).forEach { (macro, share) ->
+                Text("${macro.first} ${macro.second} g · ${Formatters.percent(share)}", style = VitalisType.Caption, color = VitalisColors.InkMuted)
             }
         }
     }

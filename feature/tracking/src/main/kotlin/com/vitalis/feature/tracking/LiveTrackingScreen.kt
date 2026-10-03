@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,6 +68,8 @@ data class LiveUiState(
     val isPaused: Boolean,
     /** Route in normalised 0..1 coordinates, already projected — the map layer owns real projection. */
     val route: List<Offset>,
+    /** Distance goal in km, or null when recording without one. */
+    val targetKm: Double? = null,
 ) {
     companion object {
         val Sample = LiveUiState(
@@ -110,7 +113,12 @@ fun LiveTrackingScreen(state: LiveUiState, onTogglePause: () -> Unit, onLap: () 
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Jarak", style = VitalisType.Small, color = VitalisColors.OnNightMuted)
                 Text(Formatters.distanceValue(state.distanceM), style = VitalisType.HeroXl, color = Color.White)
-                Text("kilometer", style = VitalisType.Small, color = VitalisColors.OnNightMuted)
+                val target = state.targetKm
+                when {
+                    target == null -> Text("kilometer", style = VitalisType.Small, color = VitalisColors.OnNightMuted)
+                    state.distanceM >= target * 1000 -> Text("kilometer · target tercapai", style = VitalisType.Small.copy(fontWeight = FontWeight.SemiBold), color = VitalisColors.Lime)
+                    else -> Text("kilometer · target ${VoiceCues.km(target)} km", style = VitalisType.Small, color = VitalisColors.OnNightMuted)
+                }
             }
 
             Column {

@@ -1,5 +1,6 @@
 package com.vitalis.core.common.format
 
+import com.vitalis.core.model.RecordType
 import com.vitalis.core.model.UnitSystem
 import java.util.Locale
 import kotlin.math.abs
@@ -106,6 +107,14 @@ object Formatters {
     fun elevation(meters: Double, unitSystem: UnitSystem = UnitSystem.METRIC): String = when (unitSystem) {
         UnitSystem.METRIC -> "${meters.roundToInt()} m"
         UnitSystem.IMPERIAL -> "${(meters * FEET_PER_METER).roundToInt()} ft"
+    }
+
+    /** A personal-record value in its natural unit: time, distance, metres or pace. */
+    fun record(type: RecordType, value: Double): String = when (type) {
+        RecordType.LONGEST_DISTANCE -> distance(value)
+        RecordType.MOST_ELEVATION_GAIN, RecordType.HIGHEST_ALTITUDE -> elevation(value)
+        RecordType.FASTEST_AVG_PACE -> pace(value) + paceUnit()
+        else -> duration(value.toLong())
     }
 
     /** Thousands-separated calories. */

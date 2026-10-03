@@ -22,22 +22,30 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DirectionsBike
 import androidx.compose.material.icons.rounded.DirectionsRun
 import androidx.compose.material.icons.rounded.DirectionsWalk
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material.icons.rounded.Hiking
 import androidx.compose.material.icons.rounded.Landscape
 import androidx.compose.material.icons.rounded.Pets
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Terrain
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +59,7 @@ import com.vitalis.core.designsystem.theme.VitalisColors
 import com.vitalis.core.designsystem.theme.VitalisTheme
 import com.vitalis.core.designsystem.theme.VitalisType
 import com.vitalis.core.model.GpsSignalQuality
+import com.vitalis.core.datastore.TrackingSettings
 import com.vitalis.core.model.SportType
 
 fun SportType.icon(): ImageVector = when (this) {
@@ -78,6 +87,12 @@ fun SportSelectScreen(
     gpsAccuracyM: Int?,
     onSelect: (SportType) -> Unit,
     onStart: () -> Unit,
+    settings: TrackingSettings = TrackingSettings(),
+    targetOptions: List<Double> = targetOptions(selected),
+    autoPauseAvailable: Boolean = true,
+    onTarget: (Double?) -> Unit = {},
+    onVoiceCues: (Boolean) -> Unit = {},
+    onAutoPause: (Boolean) -> Unit = {},
 ) {
     Column(
         Modifier
@@ -102,15 +117,64 @@ fun SportSelectScreen(
 
         VCard(radius = 22.dp, padding = PaddingValues(0.dp), spacing = 0.dp) {
             Row(Modifier.height(androidx.compose.foundation.layout.IntrinsicSize.Min)) {
-                Stat("Target", "5 km", Modifier.weight(1f).padding(14.dp), valueStyle = VitalisType.BodyStrong)
+                SettingCell(
+                    "Target", settings.targetKm?.let { "${VoiceCues.km(it)} km" } ?: "Bebas",
+                    listOf<Pair<String, () -> Unit>>("Bebas" to { onTarget(null) }) + targetOptions.map { km -> "${VoiceCues.km(km)} km" to { onTarget(km) } },
+                    Modifier.weight(1f),
+                )
                 VerticalDivider(color = VitalisColors.Hairline)
-                Stat("Suara", "Tiap 1 km", Modifier.weight(1f).padding(14.dp), valueStyle = VitalisType.BodyStrong)
+                SettingCell(
+                    "Suara", if (settings.voiceCues) "Tiap 1 km" else "Mati",
+                    listOf("Tiap 1 km" to { onVoiceCues(true) }, "Mati" to { onVoiceCues(false) }),
+                    Modifier.weight(1f),
+                )
                 VerticalDivider(color = VitalisColors.Hairline)
-                Stat("Auto-pause", "Aktif", Modifier.weight(1f).padding(14.dp), valueStyle = VitalisType.BodyStrong)
+                // Climbing and open-water swimming never auto-pause: long legitimate stops (spec §8.4).
+                SettingCell(
+                    "Auto-pause", if (!autoPauseAvailable) "Tidak ada" else if (settings.autoPause) "Aktif" else "Mati",
+                    listOf("Aktif" to { onAutoPause(true) }, "Mati" to { onAutoPause(false) }),
+                    Modifier.weight(1f), enabled = autoPauseAvailable,
+                )
             }
         }
 
         PillButton("Mulai ${selected.label().lowercase()}", onStart, Modifier.fillMaxWidth(), icon = Icons.Rounded.PlayArrow, height = 60.dp)
+    }
+}
+
+/** Sensible distance goals per sport: race distances on foot, longer steps on a bike. */
+fun targetOptions(sport: SportType): List<Double> = when {
+    sport.isFootSport -> listOf(3.0, 5.0, 10.0, 21.1, 42.2)
+    sport == SportType.CYCLING_ROAD || sport == SportType.MOUNTAIN_BIKING -> listOf(10.0, 20.0, 40.0, 80.0)
+    else -> listOf(2.0, 5.0, 10.0)
+}
+
+/** One tappable cell of the settings card; the choice list drops down from it. */
+@Composable
+private fun SettingCell(label: String, value: String, options: List<Pair<String, () -> Unit>>, modifier: Modifier, enabled: Boolean = true) {
+    var open by remember { mutableStateOf(false) }
+    Box(modifier) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enabled, role = Role.DropdownList, onClickLabel = "Ubah $label") { open = true }
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(label, style = VitalisType.Caption, color = VitalisColors.InkMuted)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(value, style = VitalisType.BodyStrong, color = if (enabled) VitalisColors.Ink else VitalisColors.InkFaint)
+                if (enabled) Icon(Icons.Rounded.ExpandMore, null, Modifier.size(18.dp), tint = VitalisColors.InkMuted)
+            }
+        }
+        DropdownMenu(open, onDismissRequest = { open = false }, containerColor = VitalisColors.Card) {
+            options.forEach { (text, pick) ->
+                DropdownMenuItem(
+                    text = { Text(text, style = VitalisType.Body, fontWeight = if (text == value) FontWeight.Bold else FontWeight.Normal) },
+                    onClick = { open = false; pick() },
+                )
+            }
+        }
     }
 }
 

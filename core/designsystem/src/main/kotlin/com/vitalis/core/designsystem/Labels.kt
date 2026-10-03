@@ -1,6 +1,7 @@
 package com.vitalis.core.designsystem
 
 import com.vitalis.core.model.MealType
+import com.vitalis.core.model.RecordType
 import com.vitalis.core.model.SportType
 import com.vitalis.core.model.XpAction
 import com.vitalis.core.model.XpAward
@@ -47,5 +48,25 @@ fun XpAward.label(): String = when (action) {
     XpAction.BREAK_PERSONAL_RECORD -> "Rekor"
     XpAction.WITHIN_CALORIE_TARGET -> "Dalam target kalori"
     // Streak milestones reuse the quest action; the reason carries the length ("streak_7").
-    XpAction.COMPLETE_WEEKLY_QUEST -> reason?.takeIf { it.startsWith("streak_") }?.let { "Streak ${it.removePrefix("streak_")} hari" } ?: "Quest mingguan"
+    XpAction.COMPLETE_WEEKLY_QUEST -> reason.let { r ->
+        when {
+            r == "quest_chest" -> "Bonus semua quest"
+            r != null && r.startsWith("streak_") -> "Streak ${r.removePrefix("streak_")} hari"
+            else -> "Quest mingguan"
+        }
+    }
+}
+
+/** Lower-case so it reads inside a sentence ("Rekor baru: 5K tercepat"); capitalise for a list row. */
+fun RecordType.label(): String = when (this) {
+    RecordType.FASTEST_1K -> "1K tercepat"
+    RecordType.FASTEST_5K -> "5K tercepat"
+    RecordType.FASTEST_10K -> "10K tercepat"
+    RecordType.FASTEST_HALF_MARATHON -> "half marathon tercepat"
+    RecordType.FASTEST_MARATHON -> "marathon tercepat"
+    RecordType.LONGEST_DISTANCE -> "jarak terjauh"
+    RecordType.LONGEST_DURATION -> "durasi terlama"
+    RecordType.MOST_ELEVATION_GAIN -> "elevasi terbanyak"
+    RecordType.FASTEST_AVG_PACE -> "pace rata-rata tercepat"
+    RecordType.HIGHEST_ALTITUDE -> "titik tertinggi"
 }

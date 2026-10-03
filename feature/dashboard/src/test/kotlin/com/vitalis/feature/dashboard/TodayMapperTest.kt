@@ -57,4 +57,15 @@ class TodayMapperTest {
         assertThat(s.meals).isEmpty()
         assertThat(s.budget.remainingKcal).isEqualTo(2300)
     }
+
+    @Test
+    fun `step bars pair up hours and scale to the busiest pair`() {
+        val hours = List(24) { if (it == 7) 1_200 else if (it == 8) 400 else if (it == 18) 800 else 0 }
+        val bars = stepBars(hours)
+        assertThat(bars).hasSize(12)
+        assertThat(bars[3]).isEqualTo(1f) // 06-08: 1.200
+        assertThat(bars[4]).isEqualTo(400f / 1_200f)
+        assertThat(bars[9]).isEqualTo(800f / 1_200f)
+        assertThat(stepBars(List(24) { 0 })).containsExactlyElementsIn(List(12) { 0f })
+    }
 }

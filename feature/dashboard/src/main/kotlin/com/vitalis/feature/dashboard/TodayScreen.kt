@@ -60,6 +60,12 @@ import com.vitalis.core.designsystem.theme.VitalisTheme
 import com.vitalis.core.designsystem.theme.VitalisType
 import com.vitalis.core.model.EnergyBudget
 import com.vitalis.core.model.MealType
+import com.vitalis.data.StepTracking
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import java.util.Locale
 
 data class MacroProgress(val label: String, val eatenG: Int, val targetG: Int, val color: Color)
@@ -75,8 +81,10 @@ data class TodayUiState(
     val steps: Int,
     val stepsTarget: Int,
     val stepsKm: Double,
-    /** Normalised 0..1 per hour bucket, for the mini bar chart. */
+    /** Normalised 0..1 per two-hour bucket, for the mini bar chart. */
     val stepsByHour: List<Float>,
+    /** Whether the steps card can count, needs the permission, or the phone has no step sensor. */
+    val stepTracking: StepTracking = StepTracking.ACTIVE,
     val macros: List<MacroProgress>,
     val waterMl: Int,
     val waterTargetMl: Int,
@@ -125,6 +133,7 @@ fun TodayScreen(
     onOpenDiary: () -> Unit,
     onAddFood: (MealType) -> Unit,
     onOpenProfile: () -> Unit,
+    onAllowSteps: () -> Unit = {},
 ) {
     val b = state.budget
     val budgetWithExercise = b.targetKcal + b.burnedNetKcal
@@ -242,10 +251,14 @@ fun TodayScreen(
                         style = VitalisType.Small, color = VitalisColors.OnLimeMuted,
                     )
                 }
-                Row(Modifier.fillMaxWidth().height(46.dp).semantics { contentDescription = "Langkah per jam" }, horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
-                    state.stepsByHour.forEach { f ->
-                        Box(Modifier.weight(1f).fillMaxHeight(f.coerceAtLeast(0.08f)).clip(RoundedCornerShape(2.dp)).background(VitalisColors.Ink))
+                when (state.stepTracking) {
+                    StepTracking.ACTIVE -> Row(Modifier.fillMaxWidth().height(46.dp).semantics { contentDescription = "Langkah per dua jam" }, horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
+                        state.stepsByHour.forEach { f ->
+                            Box(Modifier.weight(1f).fillMaxHeight(f.coerceAtLeast(0.08f)).clip(RoundedCornerShape(2.dp)).background(VitalisColors.Ink))
+                        }
                     }
+                    StepTracking.NEEDS_PERMISSION -> PillButton("Hitung langkah", onAllowSteps, Modifier.fillMaxWidth(), kind = ButtonKind.Primary, height = 44.dp)
+                    StepTracking.UNSUPPORTED -> Text("Ponsel ini tidak punya sensor langkah.", style = VitalisType.Small, color = VitalisColors.OnLimeMuted)
                 }
             }
         }
@@ -335,9 +348,18 @@ fun TodayRoute(
     viewModel: TodayViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
+    LifecycleResumeEffect(Unit) {
+        viewModel.refreshSteps()
+        onPauseOrDispose {}
+    }
+    // Android 10+ asks before an app may read the step counter.
+    val allowSteps = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { viewModel.refreshSteps() }
     if (state == null) {
         Box(Modifier.fillMaxSize().background(VitalisColors.Ground))
         return
     }
-    TodayScreen(state, onAddWater = viewModel::addWater, onOpenDiary = onOpenDiary, onAddFood = onAddFood, onOpenProfile = onOpenProfile)
+    TodayScreen(
+        state, onAddWater = viewModel::addWater, onOpenDiary = onOpenDiary, onAddFood = onAddFood, onOpenProfile = onOpenProfile,
+        onAllowSteps = { if (Build.VERSION.SDK_INT >= 29) allowSteps.launch(Manifest.permission.ACTIVITY_RECOGNITION) },
+    )
 }

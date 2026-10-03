@@ -31,9 +31,11 @@ class TrackingSession(
     private val bmrKcal: Int,
     private val startMs: Long,
     val id: String = UUID.randomUUID().toString(),
+    autoPauseEnabled: Boolean = true,
+    private val targetMeters: Double? = null,
 ) {
     private val pipeline = LocationPipeline(SportProfile.forSport(sport))
-    private val autoPause = AutoPauseDetector(SportProfile.forSport(sport).autoPause)
+    private val autoPause = AutoPauseDetector(SportProfile.forSport(sport).autoPause.takeIf { autoPauseEnabled })
     private val lapTracker = LapTracker()
     private val laps = mutableListOf<Lap>()
     private val route = mutableListOf<TrackPoint>()
@@ -109,6 +111,7 @@ class TrackingSession(
             // switch to an append-only flow if the live screen shows jank on long sessions.
             route = route.toList(),
             signalQuality = LocationPipeline.signalQuality(lastAccuracyM),
+            targetMeters = targetMeters,
         )
     }
 

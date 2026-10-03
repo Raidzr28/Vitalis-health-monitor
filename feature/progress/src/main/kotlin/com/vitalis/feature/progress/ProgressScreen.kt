@@ -21,7 +21,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +50,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vitalis.core.common.format.Formatters
+import com.vitalis.core.designsystem.component.ButtonKind
 import com.vitalis.core.designsystem.component.InkCard
+import com.vitalis.core.designsystem.component.PillButton
+import com.vitalis.core.designsystem.component.VTextField
 import com.vitalis.core.designsystem.component.SectionHeader
 import com.vitalis.core.designsystem.component.Stat
 import com.vitalis.core.designsystem.component.TabBarClearance
@@ -55,25 +66,31 @@ import com.vitalis.core.designsystem.theme.VitalisType
 import java.time.LocalDate
 import java.util.Locale
 
-enum class ProgressRange(val label: String) { Week("Minggu"), Month("Bulan"), Year("Tahun") }
+/** [days] is the weight-chart window. */
+enum class ProgressRange(val label: String, val days: Int) { Week("Minggu", 7), Month("Bulan", 30), Year("Tahun", 365) }
 
-data class Pillar(val name: String, val score: Int)
+/** [score] null = nothing tracked for this pillar yet; it is left out of the total, not scored as zero. */
+data class Pillar(val name: String, val score: Int?)
 data class WeightPoint(val date: LocalDate, val kg: Float)
 data class RecordRow(val name: String, val detail: String, val value: String)
 
 data class ProgressUiState(
     val range: ProgressRange,
-    val healthScore: Int,
-    val healthDelta: Int,
+    /** Null until at least one pillar has data. */
+    val healthScore: Int?,
+    /** Change against the 7 days before; null when there is nothing to compare. */
+    val healthDelta: Int?,
     val pillars: List<Pillar>,
     val tip: String,
+    /** Weigh-ins inside [range], oldest first. */
     val weights: List<WeightPoint>,
-    val targetWeightKg: Float,
-    val bmi: Float,
-    val waistToHeight: Float,
+    val currentWeightKg: Float?,
+    val targetWeightKg: Float?,
+    val bmi: Float?,
+    val waistToHeight: Float?,
     val month: LocalDate,
     val today: LocalDate,
-    /** Activity intensity 0..3 per day of [month], keyed by day-of-month; missing = no data. */
+    /** Activity intensity 0..3 per day of [month] up to today, keyed by day-of-month. */
     val intensityByDay: Map<Int, Int>,
     val records: List<RecordRow>,
 ) {
@@ -81,25 +98,29 @@ data class ProgressUiState(
         private val lv = listOf(2, 1, 3, 0, 2, 2, 1, 3, 2, 0, 1, 3, 2, 1, 2, 3, 2, 1, 0, 3, 2, 1, 2, 3, 3)
         val Sample = ProgressUiState(
             range = ProgressRange.Month, healthScore = 74, healthDelta = 4,
-            pillars = listOf(Pillar("Komposisi tubuh", 62), Pillar("Kebugaran kardio", 78), Pillar("Aktivitas", 85), Pillar("Nutrisi", 76), Pillar("Pemulihan", 70)),
-            tip = "Tidur 30 menit lebih awal bisa menaikkan pilar pemulihan.",
+            pillars = listOf(Pillar("Komposisi tubuh", 62), Pillar("Kebugaran kardio", null), Pillar("Aktivitas", 85), Pillar("Nutrisi", 76), Pillar("Pemulihan", 70)),
+            tip = "Tambah 40 menit aktif lagi untuk mencapai 150 menit minggu ini.",
             weights = listOf(88.0f, 87.4f, 87.1f, 86.3f, 86.0f, 85.4f, 85.1f, 84.6f).mapIndexed { i, kg -> WeightPoint(LocalDate.of(2026, 8, 1).plusWeeks(i.toLong()), kg) },
-            targetWeightKg = 75f, bmi = 27.6f, waistToHeight = 0.53f,
+            currentWeightKg = 84.6f, targetWeightKg = 75f, bmi = 27.6f, waistToHeight = null,
             month = LocalDate.of(2026, 9, 1), today = LocalDate.of(2026, 9, 25),
             intensityByDay = lv.mapIndexed { i, v -> (i + 1) to v }.toMap(),
             records = listOf(
-                RecordRow("5K tercepat", "Hari ini", "30:47"),
-                RecordRow("10K tercepat", "7 Sep", "1:05:12"),
-                RecordRow("Jarak terjauh", "14 Sep · lari", "12,4 km"),
-                RecordRow("Elevasi terbanyak", "30 Agu · hiking", "620 m"),
+                RecordRow("5K tercepat", "26 Sep 2026 · Lari", "30:47"),
+                RecordRow("Jarak terjauh", "14 Sep 2026 · Lari", "12,40 km"),
+                RecordRow("Elevasi terbanyak", "30 Agu 2026 · Hiking", "620 m"),
             ),
         )
     }
 }
 
+/** Accepts "72,4" and "72.4"; null unless it is a plausible adult weight. */
+fun parseWeightKg(input: String): Float? = input.trim().replace(',', '.').toFloatOrNull()?.takeIf { it in 30f..250f }
+
 @Composable
-fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Unit) {
+fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Unit, onLogWeight: (Float) -> Unit = {}) {
     val id = Locale.forLanguageTag("id")
+    var weighing by rememberSaveable { mutableStateOf(false) }
+    if (weighing) WeightDialog(state.currentWeightKg, onDismiss = { weighing = false }, onSave = { weighing = false; onLogWeight(it) })
     Column(
         Modifier
             .fillMaxSize()
@@ -128,18 +149,22 @@ fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Uni
         // Health score (spec §4.4.2): trend first, never a verdict.
         InkCard {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Text("${state.healthScore}", style = VitalisType.Hero.copy(fontSize = VitalisType.Hero.fontSize * 1.27f), color = Color.White)
+                Text(state.healthScore?.toString() ?: "–", style = VitalisType.Hero.copy(fontSize = VitalisType.Hero.fontSize * 1.27f), color = Color.White)
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text("Health Score", style = VitalisType.Title, color = Color.White)
-                    Tag("${Formatters.signed(state.healthDelta)} dari minggu lalu", background = VitalisColors.Lime, color = VitalisColors.Ink, strong = true)
+                    state.healthDelta?.let { Tag("${Formatters.signed(it)} dari minggu lalu", background = VitalisColors.Lime, color = VitalisColors.Ink, strong = true) }
                 }
             }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 state.pillars.forEach { p ->
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(p.name, style = VitalisType.Small, color = Color(0xFFC9CACE), modifier = Modifier.width(118.dp))
-                        TrackBar(p.score / 100f, VitalisColors.Lime, Modifier.weight(1f), track = VitalisColors.NightTrack)
-                        Text("${p.score}", style = VitalisType.Mono.copy(fontSize = VitalisType.Small.fontSize), color = Color.White, textAlign = TextAlign.End, modifier = Modifier.width(26.dp))
+                        if (p.score != null) {
+                            TrackBar(p.score / 100f, VitalisColors.Lime, Modifier.weight(1f), track = VitalisColors.NightTrack)
+                            Text("${p.score}", style = VitalisType.Mono.copy(fontSize = VitalisType.Small.fontSize), color = Color.White, textAlign = TextAlign.End, modifier = Modifier.width(26.dp))
+                        } else {
+                            Text("belum ada data", style = VitalisType.Caption, color = VitalisColors.OnNightMuted, modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }
@@ -151,31 +176,40 @@ fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Uni
         }
 
         // Weight
-        val first = state.weights.first()
-        val last = state.weights.last()
         VCard(spacing = 12.dp) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text("Berat badan", style = VitalisType.Small, color = VitalisColors.InkMuted)
-                    Text(Formatters.weight(last.kg), style = VitalisType.DisplayL, color = VitalisColors.Ink)
+                    Text(state.currentWeightKg?.let { Formatters.weight(it) } ?: "–", style = VitalisType.DisplayL, color = VitalisColors.Ink)
                 }
+                PillButton("Catat berat", { weighing = true }, kind = ButtonKind.Outline, height = 44.dp)
+            }
+            val w = state.weights
+            if (w.size >= 2) {
+                val first = w.first()
+                val last = w.last()
                 Text(
                     "${String.format(id, "%+.1f", last.kg - first.kg).replace('-', '−')} kg sejak ${first.date.dayOfMonth} ${first.date.month.getDisplayName(java.time.format.TextStyle.SHORT, id)}",
                     style = VitalisType.Small.copy(fontWeight = FontWeight.SemiBold),
                     color = if (last.kg <= first.kg) VitalisColors.Success else VitalisColors.InkMuted,
                 )
-            }
-            WeightChart(state.weights.map { it.kg }, Modifier.fillMaxWidth().height(130.dp))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                listOf(first.date, state.weights[state.weights.size / 2].date, last.date).forEach {
-                    Text("${it.dayOfMonth} ${it.month.getDisplayName(java.time.format.TextStyle.SHORT, id)}", style = VitalisType.Caption.copy(fontSize = VitalisType.Caption.fontSize * 0.92f), color = VitalisColors.InkMuted)
+                WeightChart(w.map { it.kg }, Modifier.fillMaxWidth().height(130.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    listOf(first.date, w[w.size / 2].date, last.date).forEach {
+                        Text("${it.dayOfMonth} ${it.month.getDisplayName(java.time.format.TextStyle.SHORT, id)}", style = VitalisType.Caption.copy(fontSize = VitalisType.Caption.fontSize * 0.92f), color = VitalisColors.InkMuted)
+                    }
                 }
+            } else {
+                Text(
+                    "Catat berat minimal 2 kali dalam 1 ${state.range.label.lowercase()} untuk melihat tren.",
+                    style = VitalisType.Small, color = VitalisColors.InkMuted,
+                )
             }
             HorizontalDivider(color = VitalisColors.Hairline)
             Row {
-                Stat("BMI", String.format(id, "%.1f", state.bmi), Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
-                Stat("Pinggang/tinggi", String.format(id, "%.2f", state.waistToHeight), Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
-                Stat("Target", Formatters.weight(state.targetWeightKg), Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
+                Stat("BMI", state.bmi?.let { String.format(id, "%.1f", it) } ?: "–", Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
+                Stat("Pinggang/tinggi", state.waistToHeight?.let { String.format(id, "%.2f", it) } ?: "–", Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
+                Stat("Target", state.targetWeightKg?.let { Formatters.weight(it) } ?: "–", Modifier.weight(1f), valueStyle = VitalisType.BodyStrong)
             }
         }
 
@@ -193,6 +227,14 @@ fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Uni
 
         VCard(padding = PaddingValues(vertical = 6.dp), spacing = 0.dp) {
             Text("Rekor pribadi", style = VitalisType.Title, color = VitalisColors.Ink, modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 12.dp, bottom = 6.dp))
+            if (state.records.isEmpty()) {
+                HorizontalDivider(color = VitalisColors.Hairline)
+                Text(
+                    "Belum ada rekor. Rekam aktivitas GPS pertamamu dan rekor terbaikmu muncul di sini.",
+                    style = VitalisType.Small, color = VitalisColors.InkMuted,
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
+                )
+            }
             state.records.forEach { r ->
                 HorizontalDivider(color = VitalisColors.Hairline)
                 Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -205,6 +247,29 @@ fun ProgressScreen(state: ProgressUiState, onRangeChange: (ProgressRange) -> Uni
             }
         }
     }
+}
+
+@Composable
+private fun WeightDialog(current: Float?, onDismiss: () -> Unit, onSave: (Float) -> Unit) {
+    var input by rememberSaveable { mutableStateOf(current?.let { String.format(Locale.getDefault(), "%.1f", it) }.orEmpty()) }
+    var error by remember { mutableStateOf<String?>(null) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = VitalisColors.Ground,
+        title = { Text("Catat berat hari ini", style = VitalisType.Title, color = VitalisColors.Ink) },
+        text = {
+            VTextField(
+                "Berat", input, { input = it; error = null }, suffix = "kg", placeholder = "70", error = error,
+                keyboardType = KeyboardType.Decimal,
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { parseWeightKg(input)?.let(onSave) ?: run { error = "Masukkan berat antara 30 dan 250 kg" } }) {
+                Text("Simpan", color = VitalisColors.Ink, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("Batal", color = VitalisColors.InkMuted) } },
+    )
 }
 
 @Composable
@@ -265,5 +330,5 @@ private fun Heatmap(state: ProgressUiState) {
 @Preview(widthDp = 390, heightDp = 1520)
 @Composable
 private fun ProgressPreview() = VitalisTheme {
-    ProgressScreen(ProgressUiState.Sample) {}
+    ProgressScreen(ProgressUiState.Sample, {})
 }

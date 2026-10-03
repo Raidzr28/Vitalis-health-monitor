@@ -97,6 +97,8 @@ data class TrackingState(
     val route: List<TrackPoint> = emptyList(),
     val signalQuality: GpsSignalQuality = GpsSignalQuality.NONE,
     val isBatterySaverActive: Boolean = false,
+    /** Distance goal picked on the sport picker; null = no target. */
+    val targetMeters: Double? = null,
 ) {
     val isRecording: Boolean get() = status == TrackingStatus.ACTIVE
     val isPaused: Boolean

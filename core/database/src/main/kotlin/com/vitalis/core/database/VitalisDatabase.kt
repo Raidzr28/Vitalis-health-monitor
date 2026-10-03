@@ -1,5 +1,6 @@
 package com.vitalis.core.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -7,6 +8,7 @@ import com.vitalis.core.database.dao.ActivityDao
 import com.vitalis.core.database.dao.BodyDao
 import com.vitalis.core.database.dao.FoodDao
 import com.vitalis.core.database.dao.GamificationDao
+import com.vitalis.core.database.dao.StepDao
 import com.vitalis.core.database.dao.UserDao
 import com.vitalis.core.database.dao.WaterDao
 import com.vitalis.core.database.entity.AchievementEntity
@@ -22,6 +24,7 @@ import com.vitalis.core.database.entity.PersonalRecordEntity
 import com.vitalis.core.database.entity.QuestEntity
 import com.vitalis.core.database.entity.UserProfileEntity
 import com.vitalis.core.database.entity.WaterLogEntity
+import com.vitalis.core.database.entity.StepHourEntity
 import com.vitalis.core.database.entity.XpLedgerEntity
 
 /**
@@ -45,9 +48,12 @@ import com.vitalis.core.database.entity.XpLedgerEntity
         AchievementEntity::class,
         PersonalRecordEntity::class,
         QuestEntity::class,
+        StepHourEntity::class,
     ],
-    version = 1,
+    // v2 adds step_hour. New tables only, so Room derives the migration from the exported schemas.
+    version = 2,
     exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
 )
 @TypeConverters(Converters::class)
 abstract class VitalisDatabase : RoomDatabase() {
@@ -57,4 +63,5 @@ abstract class VitalisDatabase : RoomDatabase() {
     abstract fun bodyDao(): BodyDao
     abstract fun activityDao(): ActivityDao
     abstract fun gamificationDao(): GamificationDao
+    abstract fun stepDao(): StepDao
 }

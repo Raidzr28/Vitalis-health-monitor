@@ -5,9 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -24,11 +22,11 @@ import com.vitalis.feature.dashboard.TodayRoute
 import com.vitalis.feature.diary.DiaryRoute
 import com.vitalis.feature.diary.FoodSearchRoute
 import com.vitalis.feature.onboarding.OnboardingRoute
+import com.vitalis.feature.profile.BadgesRoute
 import com.vitalis.feature.profile.CelebrationOverlay
 import com.vitalis.feature.profile.ProfileRoute
 import com.vitalis.feature.profile.XpHistoryRoute
-import com.vitalis.feature.progress.ProgressScreen
-import com.vitalis.feature.progress.ProgressUiState
+import com.vitalis.feature.progress.ProgressRoute
 import com.vitalis.feature.tracking.ActivitySummaryRoute
 import com.vitalis.feature.tracking.LiveTrackingRoute
 import com.vitalis.feature.tracking.LocationPermissionRoute
@@ -47,6 +45,7 @@ private object Routes {
     const val PROGRESS = "progress"
     const val PROFILE = "profile"
     const val XP_HISTORY = "xp-history"
+    const val BADGES = "badges"
     fun search(meal: MealType, date: LocalDate = LocalDate.now()) = "search/${meal.name}/$date"
     fun location(sport: SportType) = "location-permission/${sport.name}"
 }
@@ -65,8 +64,6 @@ fun VitalisApp(startAtOnboarding: Boolean) {
     val route = nav.currentBackStackEntryAsState().value?.destination?.route
     val currentTab = tabRoutes.entries.firstOrNull { it.value == route }?.key
 
-    // ponytail: progress still runs on sample state until the body sprint.
-    var progress by remember { mutableStateOf(ProgressUiState.Sample) }
 
     Box(Modifier.fillMaxSize().background(VitalisColors.Ground)) {
         NavHost(nav, startDestination = if (startAtOnboarding) Routes.ONBOARDING else Routes.TODAY) {
@@ -110,8 +107,9 @@ fun VitalisApp(startAtOnboarding: Boolean) {
                     onDone = { nav.navigate(Routes.TODAY) { popUpTo(Routes.TODAY) { inclusive = true } } },
                 )
             }
-            composable(Routes.PROGRESS) { ProgressScreen(progress) { progress = progress.copy(range = it) } }
-            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}, onOpenXpHistory = { nav.navigate(Routes.XP_HISTORY) }) }
+            composable(Routes.PROGRESS) { ProgressRoute() }
+            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}, onOpenXpHistory = { nav.navigate(Routes.XP_HISTORY) }, onOpenBadges = { nav.navigate(Routes.BADGES) }) }
+            composable(Routes.BADGES) { BadgesRoute(onBack = { nav.popBackStack() }) }
             composable(Routes.XP_HISTORY) { XpHistoryRoute(onBack = { nav.popBackStack() }) }
         }
 

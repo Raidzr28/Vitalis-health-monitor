@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.onStart
 data class DayStats(val date: LocalDate, val targets: DailyTargets, val steps: Int)
 
 @Singleton
-class UserRepository @Inject constructor(private val db: VitalisDatabase) {
+class UserRepository @Inject constructor(private val db: VitalisDatabase, private val rewards: GamificationRepository) {
     private val userDao = db.userDao()
     private val bodyDao = db.bodyDao()
     private val gamificationDao = db.gamificationDao()
@@ -50,7 +50,20 @@ class UserRepository @Inject constructor(private val db: VitalisDatabase) {
             upsertWeight(today, weightKg)
             gamificationDao.insertIfAbsent(GamificationState(userId = saved.id).toEntity())
             snapshotTargets(saved, weightKg, today)
+            rewards.refreshBadges() // creates the badge rows, so the first real unlock is celebrated
+            rewards.refreshQuests() // first week's quests are there from day one
         }
+    }
+
+    /**
+     * Records a weigh-in. Logging for today also refreshes today's targets, since BMR and the
+     * calorie target follow body weight; past days keep the budget they had.
+     */
+    suspend fun logWeight(kg: Float, date: LocalDate = LocalDate.now()) = db.withTransaction {
+        require(kg in 30f..250f) { "implausible weight: $kg" }
+        upsertWeight(date, kg)
+        if (date == LocalDate.now()) userDao.profile()?.toDomain()?.let { snapshotTargets(it, kg, date) }
+        rewards.onWeightLogged(date)
     }
 
     /**

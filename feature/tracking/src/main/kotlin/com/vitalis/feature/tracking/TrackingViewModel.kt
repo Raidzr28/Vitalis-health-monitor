@@ -30,6 +30,9 @@ import com.vitalis.core.designsystem.theme.VitalisColors
 import com.vitalis.core.domain.tracking.LocationPipeline
 import com.vitalis.core.model.PersonalRecord
 import com.vitalis.core.model.RecordType
+import com.vitalis.core.datastore.TrackingPreferences
+import com.vitalis.core.datastore.TrackingSettings
+import com.vitalis.core.model.SportProfile
 import com.vitalis.core.model.SportType
 import com.vitalis.core.model.TrackPoint
 import com.vitalis.core.model.TrackingState
@@ -52,7 +55,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -65,6 +70,7 @@ class TrackingViewModel @Inject constructor(
     private val users: UserRepository,
     private val activities: ActivityRepository,
     private val gamification: GamificationRepository,
+    private val prefs: TrackingPreferences,
 ) : ViewModel() {
     private val _sport = MutableStateFlow(SportType.RUNNING)
     val sport: StateFlow<SportType> = _sport.asStateFlow()
@@ -73,6 +79,20 @@ class TrackingViewModel @Inject constructor(
     val gpsAccuracyM: StateFlow<Float?> = _gpsAccuracyM.asStateFlow()
 
     val tracking: StateFlow<TrackingState> = manager.state
+
+    /** The settings card for the selected sport (target is per sport; voice and auto-pause are global). */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val settings: StateFlow<TrackingSettings> = _sport.flatMapLatest { prefs.settings(it) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, TrackingSettings())
+
+    val lastUsed: StateFlow<Map<SportType, String>> = activities.observeLastUsed().map { bySport ->
+        val today = LocalDate.now()
+        bySport.mapValues { (_, t) -> lastUsedLabel(t.atZone(ZoneId.systemDefault()).toLocalDate(), today) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun setTarget(km: Double?) { viewModelScope.launch { prefs.setTarget(_sport.value, km) } }
+    fun setVoiceCues(on: Boolean) { viewModelScope.launch { prefs.setVoiceCues(on) } }
+    fun setAutoPause(on: Boolean) { viewModelScope.launch { prefs.setAutoPause(on) } }
 
     val live: StateFlow<LiveUiState> = manager.state.map { it.toLiveUi() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), manager.state.value.toLiveUi())
@@ -101,7 +121,7 @@ class TrackingViewModel @Inject constructor(
             // Onboarding guarantees both; the fallbacks only keep a half-migrated install from crashing.
             val weightKg = users.latestWeightKg.first()?.toDouble() ?: 70.0
             val bmr = users.observeDay(LocalDate.now()).first()?.targets?.bmrKcal ?: 1_500
-            manager.start(_sport.value, weightKg, bmr)
+            manager.start(_sport.value, weightKg, bmr, prefs.settings(_sport.value).first())
             ContextCompat.startForegroundService(context, Intent(context, TrackingService::class.java))
             onStarted()
         }
@@ -142,6 +162,8 @@ internal val TrackingPermissions = buildList {
 fun SportSelectRoute(onOpenLive: () -> Unit, onNeedPermission: (SportType) -> Unit, vm: TrackingViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val sport by vm.sport.collectAsStateWithLifecycle()
+    val settings by vm.settings.collectAsStateWithLifecycle()
+    val lastUsed by vm.lastUsed.collectAsStateWithLifecycle()
     val accuracy by vm.gpsAccuracyM.collectAsStateWithLifecycle()
     val tracking by vm.tracking.collectAsStateWithLifecycle()
     val recording = tracking.isRecording || tracking.isPaused
@@ -160,11 +182,17 @@ fun SportSelectRoute(onOpenLive: () -> Unit, onNeedPermission: (SportType) -> Un
 
     SportSelectScreen(
         selected = sport,
-        lastUsed = emptyMap(),
+        lastUsed = lastUsed,
         gps = LocationPipeline.signalQuality(accuracy),
         gpsAccuracyM = accuracy?.roundToInt(),
         onSelect = vm::selectSport,
         onStart = { if (context.hasFineLocation()) permissions.launch(TrackingPermissions) else onNeedPermission(sport) },
+        settings = settings,
+        targetOptions = targetOptions(sport),
+        autoPauseAvailable = SportProfile.forSport(sport).autoPause != null,
+        onTarget = vm::setTarget,
+        onVoiceCues = vm::setVoiceCues,
+        onAutoPause = vm::setAutoPause,
     )
 }
 
@@ -199,6 +227,7 @@ internal fun TrackingState.toLiveUi() = LiveUiState(
     hrZone = null,
     isPaused = isPaused,
     route = normalizeRoute(route),
+    targetKm = targetMeters?.div(1000),
 )
 
 internal fun FinishedActivity.toSummaryUi(rewards: ActivityRewards, zone: ZoneId = ZoneId.systemDefault()): SummaryUiState {
@@ -224,7 +253,7 @@ internal fun FinishedActivity.toSummaryUi(rewards: ActivityRewards, zone: ZoneId
         elevationProfile = elevationProfile(route),
         route = normalizeRoute(route),
         newRecord = rewards.beaten.minByOrNull { HeadlineOrder.indexOf(it.recordType) }?.let { pr ->
-            PrUi("Rekor baru: ${pr.recordType.label()}", "${pr.format(pr.value)} · sebelumnya ${pr.format(pr.previousValue!!)}", XpAction.BREAK_PERSONAL_RECORD.baseXp)
+            PrUi("Rekor baru: ${pr.recordType.label()}", "${Formatters.record(pr.recordType, pr.value)} · sebelumnya ${Formatters.record(pr.recordType, pr.previousValue!!)}", XpAction.BREAK_PERSONAL_RECORD.baseXp)
         },
         xpBreakdown = rewards.awards.map { it.label() to it.amount },
     )
@@ -237,25 +266,6 @@ private val HeadlineOrder = listOf(
     RecordType.LONGEST_DURATION, RecordType.FASTEST_AVG_PACE,
 )
 
-private fun RecordType.label() = when (this) {
-    RecordType.FASTEST_1K -> "1K tercepat"
-    RecordType.FASTEST_5K -> "5K tercepat"
-    RecordType.FASTEST_10K -> "10K tercepat"
-    RecordType.FASTEST_HALF_MARATHON -> "half marathon tercepat"
-    RecordType.FASTEST_MARATHON -> "marathon tercepat"
-    RecordType.LONGEST_DISTANCE -> "jarak terjauh"
-    RecordType.LONGEST_DURATION -> "durasi terlama"
-    RecordType.MOST_ELEVATION_GAIN -> "elevasi terbanyak"
-    RecordType.FASTEST_AVG_PACE -> "pace rata-rata tercepat"
-    RecordType.HIGHEST_ALTITUDE -> "titik tertinggi"
-}
-
-private fun PersonalRecord.format(v: Double) = when (recordType) {
-    RecordType.LONGEST_DISTANCE -> Formatters.distance(v)
-    RecordType.MOST_ELEVATION_GAIN, RecordType.HIGHEST_ALTITUDE -> Formatters.elevation(v)
-    RecordType.FASTEST_AVG_PACE -> Formatters.pace(v) + Formatters.paceUnit()
-    else -> Formatters.duration(v.toLong())
-}
 
 
 /**

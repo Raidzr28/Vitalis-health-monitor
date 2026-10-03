@@ -100,6 +100,9 @@ fun ActivitySession.toEntity() = ActivitySessionEntity(
     isSynced = isSynced,
 )
 
+/** Most recent start per sport, for the sport picker tiles. */
+data class SportLastUsed(val sportType: SportType, val lastStart: Instant)
+
 /**
  * Raw GPS trace. At 1 Hz a two-hour ride is ~7 200 rows, so inserts are batched
  * and the cascade delete guarantees no orphaned points survive a deleted session.

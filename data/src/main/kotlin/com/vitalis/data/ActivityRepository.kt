@@ -5,8 +5,10 @@ import com.vitalis.core.database.VitalisDatabase
 import com.vitalis.core.database.entity.toDomain
 import com.vitalis.core.database.entity.toEntity
 import com.vitalis.core.model.ActivitySession
+import com.vitalis.core.model.SportType
 import com.vitalis.core.model.Lap
 import com.vitalis.core.model.TrackPoint
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
@@ -24,6 +26,10 @@ class ActivityRepository @Inject constructor(
     fun observeSessionsOn(date: LocalDate, zone: ZoneId = ZoneId.systemDefault()): Flow<List<ActivitySession>> =
         dao.observeStartedBetween(date.atStartOfDay(zone).toInstant(), date.plusDays(1).atStartOfDay(zone).toInstant())
             .map { rows -> rows.map { it.toDomain() } }
+
+    /** When each sport was last started, for the "2 hari lalu" captions on the sport picker. */
+    fun observeLastUsed(): Flow<Map<SportType, Instant>> =
+        dao.observeLastStartBySport().map { rows -> rows.associate { it.sportType to it.lastStart } }
 
     /** A GPS recording is saved whole or not at all, XP and records included. */
     suspend fun saveRecorded(session: ActivitySession, route: List<TrackPoint>, laps: List<Lap>) = db.withTransaction {

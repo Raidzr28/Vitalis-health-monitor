@@ -76,6 +76,26 @@ data class XpHistoryRow(
     val distanceMeters: Double?,
 )
 
+/** Lifetime activity sums for badges. */
+data class ActivityTotals(val distanceM: Double, val elevationM: Double, val maxAltitudeM: Double)
+
+/** One day's intake and targets, for the nutrition badges. */
+data class DayNutritionRow(
+    val date: LocalDate,
+    val proteinG: Double,
+    val carbsG: Double,
+    val fatG: Double,
+    val waterMl: Int,
+    val targetProteinG: Int,
+    val targetCarbsG: Int,
+    val targetFatG: Int,
+    val targetWaterMl: Int,
+)
+
+/**
+ * A badge's progress and unlock time. Definitions (title, tier, threshold) live in code,
+ * in BadgeCatalog, so [titleKey] and [descriptionKey] only mirror them for debugging.
+ */
 @Entity(tableName = "achievement", indices = [Index("category")])
 data class AchievementEntity(
     @PrimaryKey val id: String,

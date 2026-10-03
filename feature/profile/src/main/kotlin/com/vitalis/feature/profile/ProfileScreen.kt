@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,12 +58,11 @@ import com.vitalis.core.designsystem.theme.VitalisColors
 import com.vitalis.core.designsystem.theme.VitalisTheme
 import com.vitalis.core.designsystem.theme.VitalisType
 import com.vitalis.core.model.LevelTier
-import com.vitalis.core.model.Tier
+import com.vitalis.core.domain.gamification.BadgeCatalog
+import com.vitalis.data.BadgeProgress
+import java.time.Instant
 
-data class QuestUi(val name: String, val progressLabel: String, val fraction: Float, val xp: Int)
-
-/** [tier] null = still locked; [lockedProgress] then says how far along it is. */
-data class BadgeUi(val name: String, val icon: ImageVector, val tier: Tier?, val lockedProgress: String? = null)
+data class QuestUi(val name: String, val progressLabel: String, val fraction: Float, val xp: Int, val done: Boolean = false)
 
 data class ProfileUiState(
     val name: String,
@@ -76,13 +76,13 @@ data class ProfileUiState(
     val badgeTotal: Int,
     val questsEndLabel: String,
     val quests: List<QuestUi>,
-    val badges: List<BadgeUi>,
+    val badges: List<BadgeProgress>,
 ) {
     companion object {
         val Sample = ProfileUiState(
             name = "Rangga", joined = "Bergabung Agustus 2026 · Jakarta",
             level = 12, xpIntoLevel = 2860, xpForLevel = 4157,
-            streakDays = 23, freezes = 2, badgeCount = 14, badgeTotal = 40,
+            streakDays = 23, freezes = 2, badgeCount = 5, badgeTotal = 21,
             questsEndLabel = "Berakhir Senin",
             quests = listOf(
                 QuestUi("Tempuh 15 km", "8,4 / 15 km", .56f, 200),
@@ -90,31 +90,17 @@ data class ProfileUiState(
                 QuestUi("Naik total 300 m", "120 / 300 m", .4f, 180),
                 QuestUi("Target protein 4 hari", "2 / 4 hari", .5f, 150),
             ),
-            badges = listOf(
-                BadgeUi("First Steps", Icons.Rounded.DirectionsWalk, Tier.GOLD),
-                BadgeUi("Week One", Icons.Rounded.LocalFireDepartment, Tier.SILVER),
-                BadgeUi("Road Warrior", Icons.Rounded.Route, Tier.BRONZE),
-                BadgeUi("Hill Starter", Icons.Rounded.Terrain, Tier.BRONZE),
-                BadgeUi("Macro Master", Icons.Rounded.PieChart, Tier.SILVER),
-                BadgeUi("Protein Pro", Icons.Rounded.FitnessCenter, Tier.BRONZE),
-                BadgeUi("Hydrated", Icons.Rounded.WaterDrop, null, "18 / 30 hari"),
-                BadgeUi("Climber", Icons.Rounded.Landscape, null, "412 / 1.000 m"),
-            ),
+            // Five earned, three in progress, straight from the real catalogue.
+            badges = BadgeCatalog.ALL.filter { !it.hidden }.take(8).mapIndexed { i, b ->
+                BadgeProgress(b, if (i < 5) 1f else .4f, if (i < 5) Instant.EPOCH else null)
+            },
         )
     }
 }
 
-private fun Tier.color(): Color = when (this) {
-    Tier.BRONZE -> VitalisColors.TierBronze
-    Tier.SILVER -> VitalisColors.TierSilver
-    Tier.GOLD -> VitalisColors.TierGold
-    Tier.PLATINUM -> Color(0xFF7FB8C9)
-}
-
-private fun Tier.label(): String = name.lowercase().replaceFirstChar { it.uppercase() }
 
 @Composable
-fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit = {}) {
+fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit = {}, onOpenBadges: () -> Unit = {}) {
     val tier = LevelTier.forLevel(state.level)
     Column(
         Modifier
@@ -170,20 +156,27 @@ fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHis
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(q.name, style = VitalisType.Body.copy(fontSize = VitalisType.Small.fontSize * 1.08f), color = VitalisColors.Ink)
-                        Text("+${q.xp} XP", style = VitalisType.Mono, color = VitalisColors.InkMuted)
+                        Text("+${q.xp} XP", style = VitalisType.Mono, color = if (q.done) VitalisColors.Success else VitalisColors.InkMuted)
                     }
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        TrackBar(q.fraction, VitalisColors.Ink, Modifier.weight(1f))
-                        Text(q.progressLabel, style = VitalisType.Caption, color = VitalisColors.InkMuted, textAlign = TextAlign.End, modifier = Modifier.widthIn(min = 72.dp))
+                        TrackBar(q.fraction, if (q.done) VitalisColors.Olive else VitalisColors.Ink, Modifier.weight(1f))
+                        Text(
+                            q.progressLabel, style = VitalisType.Caption.copy(fontWeight = if (q.done) FontWeight.Bold else FontWeight.Normal),
+                            color = if (q.done) VitalisColors.Success else VitalisColors.InkMuted, textAlign = TextAlign.End, modifier = Modifier.widthIn(min = 72.dp),
+                        )
                     }
                 }
             }
             HorizontalDivider(color = VitalisColors.Hairline)
-            Text("Selesaikan keempatnya untuk bonus +500 XP dan badge mingguan.", style = VitalisType.Caption, color = VitalisColors.InkMuted)
+            Text(
+                if (state.quests.isNotEmpty() && state.quests.all { it.done }) "Keempatnya selesai: bonus +500 XP sudah masuk. Quest baru hari Senin."
+                else "Selesaikan keempatnya untuk bonus +500 XP.",
+                style = VitalisType.Caption, color = VitalisColors.InkMuted,
+            )
         }
 
         VCard {
-            SectionHeader("Badge", trailing = "${state.badgeCount} dari ${state.badgeTotal}")
+            SectionHeader("Badge", trailing = "${state.badgeCount} dari ${state.badgeTotal} · Lihat semua", onTrailing = onOpenBadges)
             state.badges.chunked(4).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     row.forEach { b -> Badge(b, Modifier.weight(1f)) }
@@ -195,20 +188,16 @@ fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHis
 }
 
 @Composable
-private fun Badge(b: BadgeUi, modifier: Modifier) {
-    val locked = b.tier == null
+private fun Badge(b: BadgeProgress, modifier: Modifier) {
+    val status = if (b.unlocked) b.badge.tier.label() else b.progressLabel()
     Column(
-        modifier.semantics(mergeDescendants = true) { contentDescription = "${b.name}, ${b.tier?.label() ?: "terkunci, ${b.lockedProgress}"}" },
+        modifier.semantics(mergeDescendants = true) { contentDescription = "${b.badge.title}, ${if (b.unlocked) status else "terkunci, $status"}" },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Box(
-            Modifier.size(60.dp).clip(CircleShape).background(if (locked) VitalisColors.Ground else VitalisColors.Ink)
-                .border(3.dp, b.tier?.color() ?: VitalisColors.Border, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) { Icon(b.icon, null, Modifier.size(24.dp), tint = if (locked) VitalisColors.InkFaint else VitalisColors.Lime) }
-        Text(b.name, style = VitalisType.Caption.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Medium), color = VitalisColors.Ink, textAlign = TextAlign.Center)
-        Text(b.tier?.label() ?: b.lockedProgress.orEmpty(), style = VitalisType.Caption.copy(fontSize = VitalisType.Caption.fontSize * 0.92f), color = VitalisColors.InkMuted, textAlign = TextAlign.Center)
+        BadgeMedallion(b.badge, b.unlocked, 60.dp)
+        Text(b.badge.title, style = VitalisType.Caption.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Medium), color = VitalisColors.Ink, textAlign = TextAlign.Center)
+        Text(status, style = VitalisType.Caption.copy(fontSize = VitalisType.Caption.fontSize * 0.92f), color = VitalisColors.InkMuted, textAlign = TextAlign.Center)
     }
 }
 

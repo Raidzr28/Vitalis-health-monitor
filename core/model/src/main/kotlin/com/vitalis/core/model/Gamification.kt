@@ -116,4 +116,10 @@ data class Quest(
     val isComplete: Boolean get() = completedAt != null || current >= target
 }
 
+/** The lifetime number a badge is measured against (spec §9.4). */
+enum class BadgeMetric {
+    DISTANCE_KM, ELEVATION_M, LONGEST_STREAK_DAYS, MACRO_DAYS, WATER_DAYS, PROTEIN_DAYS,
+    NIGHT_ACTIVITIES, SUNRISE_ACTIVITIES, ACTIVE_DAY_RUN, MAX_ALTITUDE_M,
+}
+
 enum class QuestType { DISTANCE_KM, ELEVATION_M, LOG_DAYS, PROTEIN_DAYS, ACTIVITY_COUNT, STEP_DAYS }

@@ -18,7 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.DirectionsRun
+import androidx.compose.material.icons.rounded.DirectionsWalk
 import androidx.compose.material.icons.rounded.EmojiEvents
+import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Restaurant
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.TaskAlt
@@ -51,6 +53,7 @@ import com.vitalis.core.designsystem.theme.VitalisColors
 import com.vitalis.core.designsystem.theme.VitalisTheme
 import com.vitalis.core.designsystem.theme.VitalisType
 import com.vitalis.core.model.MealType
+import com.vitalis.core.model.QuestType
 import com.vitalis.core.model.XpAction
 import com.vitalis.data.GamificationRepository
 import com.vitalis.data.UserRepository
@@ -67,7 +70,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
-enum class XpEventKind { MEAL, FULL_DAY, WATER, ACTIVITY, RECORD, OTHER }
+enum class XpEventKind { MEAL, FULL_DAY, WATER, STEPS, ACTIVITY, RECORD, QUEST, OTHER }
 
 /** One event (a meal slot, a session, a water day) with every award it paid, summed. */
 data class XpEventUi(val kind: XpEventKind, val title: String, val detail: String, val xp: Int)
@@ -107,7 +110,21 @@ private fun toEvent(awards: List<XpHistoryEntry>, zone: ZoneId): XpEventUi {
             title = "${meal?.label() ?: "Makanan"} dicatat"
         }
         ref.startsWith("daylog:") -> { kind = XpEventKind.FULL_DAY; title = "Hari lengkap" }
+        ref.startsWith("quest-chest:") -> { kind = XpEventKind.QUEST; title = "Semua quest minggu ini selesai" }
+        ref.startsWith("quest:") -> {
+            kind = XpEventKind.QUEST
+            title = when (QuestType.entries.find { it.name == ref.substringAfterLast(':') }) {
+                QuestType.DISTANCE_KM -> "Quest jarak selesai"
+                QuestType.ELEVATION_M -> "Quest elevasi selesai"
+                QuestType.ACTIVITY_COUNT -> "Quest aktivitas selesai"
+                QuestType.LOG_DAYS -> "Quest catat makan selesai"
+                QuestType.PROTEIN_DAYS -> "Quest protein selesai"
+                else -> "Quest mingguan selesai"
+            }
+        }
+        ref.startsWith("weight:") -> { kind = XpEventKind.OTHER; title = "Berat dicatat" }
         ref.startsWith("water:") -> { kind = XpEventKind.WATER; title = "Target air tercapai" }
+        ref.startsWith("steps:") -> { kind = XpEventKind.STEPS; title = "Target langkah tercapai" }
         ref.startsWith("activity:") -> {
             kind = if (awards.any { it.award.action == XpAction.BREAK_PERSONAL_RECORD }) XpEventKind.RECORD else XpEventKind.ACTIVITY
             val distance = first.distanceMeters?.takeIf { it > 0 }?.let { " ${Formatters.distance(it)}" }.orEmpty()
@@ -210,8 +227,10 @@ private fun XpEventKind.icon(): ImageVector = when (this) {
     XpEventKind.MEAL -> Icons.Rounded.Restaurant
     XpEventKind.FULL_DAY -> Icons.Rounded.TaskAlt
     XpEventKind.WATER -> Icons.Rounded.WaterDrop
+    XpEventKind.STEPS -> Icons.Rounded.DirectionsWalk
     XpEventKind.ACTIVITY -> Icons.Rounded.DirectionsRun
     XpEventKind.RECORD -> Icons.Rounded.EmojiEvents
+    XpEventKind.QUEST -> Icons.Rounded.Flag
     XpEventKind.OTHER -> Icons.Rounded.Star
 }
 

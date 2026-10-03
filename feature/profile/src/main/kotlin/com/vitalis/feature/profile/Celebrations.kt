@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -82,6 +83,7 @@ import com.vitalis.core.designsystem.label
 import com.vitalis.core.designsystem.theme.VitalisColors
 import com.vitalis.core.designsystem.theme.VitalisTheme
 import com.vitalis.core.designsystem.theme.VitalisType
+import com.vitalis.core.domain.gamification.BadgeCatalog
 import com.vitalis.core.domain.gamification.LevelCurve
 import com.vitalis.core.domain.gamification.StreakCalculator
 import com.vitalis.core.model.LevelTier
@@ -128,6 +130,7 @@ fun CelebrationOverlay(vm: CelebrationViewModel = hiltViewModel()) {
             null -> Unit
             is Celebration.LevelUp -> LevelUpScreen(c, vm::dismiss)
             is Celebration.StreakMilestone -> StreakScreen(c, vm::dismiss)
+            is Celebration.BadgeUnlocked -> BadgeUnlockedScreen(c, vm::dismiss)
         }
     }
 }
@@ -283,6 +286,47 @@ fun StreakScreen(c: Celebration.StreakMilestone, onContinue: () -> Unit) {
     }
 }
 
+// ── Badge unlocked ──────────────────────────────────────────────────────────────
+
+@Composable
+fun BadgeUnlockedScreen(c: Celebration.BadgeUnlocked, onContinue: () -> Unit) {
+    val badge = c.badge
+    val pop = remember(c) { Animatable(.4f) }
+    LaunchedEffect(c) { pop.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow)) }
+    val orbit by rememberInfiniteTransition(label = "orbit").animateFloat(0f, 360f, infiniteRepeatable(tween(24_000, easing = LinearEasing)), label = "spin")
+
+    Column(
+        Modifier.fillMaxSize().blockTouches().background(VitalisColors.NightDeep).statusBarsPadding().navigationBarsPadding().padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+            TopoLines(badge.tier.color().copy(alpha = .18f), Modifier.fillMaxSize(), centerY = .38f)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(if (badge.hidden) "BADGE RAHASIA" else "BADGE BARU", style = VitalisType.Mono.copy(fontSize = 13.sp, letterSpacing = 2.6.sp), color = VitalisColors.Lime)
+                Box(Modifier.size(240.dp), contentAlignment = Alignment.Center) {
+                    Canvas(Modifier.size(220.dp).rotate(orbit)) {
+                        drawCircle(
+                            badge.tier.color().copy(alpha = .6f),
+                            style = Stroke(1.5.dp.toPx(), cap = StrokeCap.Round, pathEffect = PathEffect.dashPathEffect(floatArrayOf(.5f, 7.dp.toPx()))),
+                        )
+                    }
+                    BadgeMedallion(badge, unlocked = true, size = 168.dp, modifier = Modifier.scale(pop.value))
+                }
+                Text(badge.title, style = VitalisType.DisplayL, color = Color.White, textAlign = TextAlign.Center, modifier = Modifier.semantics { heading() })
+                Text(badge.description(), style = VitalisType.Body, color = VitalisColors.OnNightMuted, textAlign = TextAlign.Center, modifier = Modifier.padding(horizontal = 12.dp))
+                Row(
+                    Modifier.clip(RoundedCornerShape(12.dp)).background(badge.tier.color().copy(alpha = .18f)).padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Box(Modifier.size(9.dp).rotate(45f).clip(RoundedCornerShape(2.dp)).background(badge.tier.color()))
+                    Text(badge.tier.label(), style = VitalisType.Small.copy(fontWeight = FontWeight.Bold), color = badge.tier.color())
+                }
+            }
+        }
+        PillButton("Mantap", onContinue, Modifier.fillMaxWidth(), kind = ButtonKind.Lime)
+    }
+}
+
 // ── Shared pieces ─────────────────────────────────────────────────────────────
 
 /** A celebration covers the app; taps must not fall through to the screen underneath. */
@@ -317,4 +361,10 @@ private fun LevelUpPreview() = VitalisTheme {
 @Composable
 private fun StreakPreview() = VitalisTheme {
     StreakScreen(Celebration.StreakMilestone(days = 7, bonusXp = 100, lastActiveDate = LocalDate.of(2026, 9, 26), freezes = 0)) {}
+}
+
+@Preview(widthDp = 390, heightDp = 844)
+@Composable
+private fun BadgeUnlockedPreview() = VitalisTheme {
+    BadgeUnlockedScreen(Celebration.BadgeUnlocked(BadgeCatalog.ALL.first { it.id == "hill_starter" })) {}
 }

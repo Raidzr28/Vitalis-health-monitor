@@ -1,5 +1,6 @@
 package com.vitalis.feature.tracking
 
+import com.vitalis.core.datastore.TrackingSettings
 import com.vitalis.core.model.SportType
 import com.vitalis.core.model.TrackingState
 import com.vitalis.core.model.TrackingStatus
@@ -26,9 +27,18 @@ class TrackingManager @Inject constructor() {
 
     val isActive: Boolean get() = session != null
 
-    fun start(sport: SportType, weightKg: Double, bmrKcal: Int, now: Long = System.currentTimeMillis()) {
+    /** Read by [TrackingService] to decide whether to speak. */
+    var voiceCues: Boolean = false
+        private set
+
+    fun start(sport: SportType, weightKg: Double, bmrKcal: Int, settings: TrackingSettings = TrackingSettings(), now: Long = System.currentTimeMillis()) {
         if (session != null) return
-        session = TrackingSession(sport, weightKg, bmrKcal, now).also { _state.value = it.state() }
+        voiceCues = settings.voiceCues
+        session = TrackingSession(
+            sport, weightKg, bmrKcal, now,
+            autoPauseEnabled = settings.autoPause,
+            targetMeters = settings.targetKm?.times(1000),
+        ).also { _state.value = it.state() }
     }
 
     fun tick(now: Long = System.currentTimeMillis()) = update { tick(now) }

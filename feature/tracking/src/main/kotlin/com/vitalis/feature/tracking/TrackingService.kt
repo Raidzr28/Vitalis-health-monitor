@@ -9,8 +9,13 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.os.Build
 import android.os.Looper
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
@@ -26,6 +31,7 @@ import com.vitalis.core.designsystem.label
 import com.vitalis.core.model.SportProfile
 import com.vitalis.core.model.TrackingState
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -43,6 +49,18 @@ class TrackingService : LifecycleService() {
     private val fused by lazy { LocationServices.getFusedLocationProviderClient(this) }
     private val notifications by lazy { getSystemService(NotificationManager::class.java) }
     private var running = false
+
+    // Voice cues: spoken over music, which dips while the coach talks and comes back after.
+    private var tts: TextToSpeech? = null
+    private var ttsReady = false
+    private val audio by lazy { getSystemService(AudioManager::class.java) }
+    private val speech = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+        .build()
+    private val duck by lazy {
+        AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK).setAudioAttributes(speech).build()
+    }
 
     private val callback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
@@ -78,6 +96,7 @@ class TrackingService : LifecycleService() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION else 0,
         )
         requestUpdates()
+        if (manager.voiceCues) startVoiceCues()
 
         lifecycleScope.launch {
             while (isActive) {
@@ -102,7 +121,41 @@ class TrackingService : LifecycleService() {
         fused.requestLocationUpdates(request, callback, Looper.getMainLooper())
     }
 
+    private fun startVoiceCues() {
+        tts = TextToSpeech(this) { status ->
+            val t = tts ?: return@TextToSpeech
+            if (status != TextToSpeech.SUCCESS) return@TextToSpeech
+            val lang = t.setLanguage(Locale.forLanguageTag("id-ID"))
+            if (lang == TextToSpeech.LANG_MISSING_DATA || lang == TextToSpeech.LANG_NOT_SUPPORTED) t.setLanguage(Locale.getDefault())
+            t.setAudioAttributes(speech)
+            t.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) = Unit
+                override fun onDone(utteranceId: String?) { audio.abandonAudioFocusRequest(duck) }
+
+                @Deprecated("Deprecated in Java")
+                override fun onError(utteranceId: String?) { audio.abandonAudioFocusRequest(duck) }
+            })
+            ttsReady = true
+        }
+        lifecycleScope.launch {
+            var before = manager.state.value
+            manager.state.collect { now ->
+                VoiceCues.cue(before, now)?.let(::speak)
+                before = now
+            }
+        }
+    }
+
+    private fun speak(text: String) {
+        if (!ttsReady) return
+        audio.requestAudioFocus(duck)
+        tts?.speak(text, TextToSpeech.QUEUE_ADD, null, "cue-${System.nanoTime()}")
+    }
+
     override fun onDestroy() {
+        tts?.stop()
+        tts?.shutdown()
+        audio.abandonAudioFocusRequest(duck)
         fused.removeLocationUpdates(callback)
         super.onDestroy()
     }

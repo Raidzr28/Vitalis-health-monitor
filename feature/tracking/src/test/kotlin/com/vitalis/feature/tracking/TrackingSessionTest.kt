@@ -46,6 +46,18 @@ class TrackingSessionTest {
     }
 
     @Test
+    fun `auto-pause switched off keeps the clock running while standing, and the target rides along`() {
+        val s = TrackingSession(SportType.RUNNING, weightKg = 70.0, bmrKcal = 1_600, startMs = t0, autoPauseEnabled = false, targetMeters = 5_000.0)
+        for (sec in 1..60) s.fix(sec, sec * 3.0)
+        for (sec in 61..120) s.fix(sec, 180.0)
+
+        val st = s.state()
+        assertThat(st.status).isEqualTo(TrackingStatus.ACTIVE)
+        assertThat(st.movingSeconds).isEqualTo(120)
+        assertThat(st.targetMeters).isEqualTo(5_000.0)
+    }
+
+    @Test
     fun `standing still auto-pauses after the dwell`() {
         val s = session()
         for (sec in 1..60) s.fix(sec, sec * 3.0)
