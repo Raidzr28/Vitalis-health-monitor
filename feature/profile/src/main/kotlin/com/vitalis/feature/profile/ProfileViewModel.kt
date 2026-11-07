@@ -65,8 +65,8 @@ class ProfileViewModel @Inject constructor(users: UserRepository, private val ga
 }
 
 @Composable
-fun ProfileRoute(onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit, onOpenBadges: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ProfileRoute(onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit, onOpenBadges: () -> Unit, onOpenWatch: () -> Unit, viewModel: ProfileViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val s = state ?: return Box(Modifier.fillMaxSize().background(VitalisColors.Ground))
-    ProfileScreen(s, onOpenSettings, onOpenXpHistory, onOpenBadges)
+    ProfileScreen(s, onOpenSettings, onOpenXpHistory, onOpenBadges, onOpenWatch)
 }

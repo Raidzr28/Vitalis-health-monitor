@@ -25,6 +25,8 @@ import com.vitalis.feature.onboarding.OnboardingRoute
 import com.vitalis.feature.profile.BadgesRoute
 import com.vitalis.feature.profile.CelebrationOverlay
 import com.vitalis.feature.profile.ProfileRoute
+import com.vitalis.feature.profile.WatchConnectRoute
+import com.vitalis.feature.profile.WatchSettingsRoute
 import com.vitalis.feature.profile.XpHistoryRoute
 import com.vitalis.feature.progress.ProgressRoute
 import com.vitalis.feature.tracking.ActivitySummaryRoute
@@ -46,6 +48,8 @@ private object Routes {
     const val PROFILE = "profile"
     const val XP_HISTORY = "xp-history"
     const val BADGES = "badges"
+    const val WATCH = "watch"
+    const val WATCH_SETTINGS = "watch/settings"
     fun search(meal: MealType, date: LocalDate = LocalDate.now()) = "search/${meal.name}/$date"
     fun location(sport: SportType) = "location-permission/${sport.name}"
 }
@@ -108,7 +112,9 @@ fun VitalisApp(startAtOnboarding: Boolean) {
                 )
             }
             composable(Routes.PROGRESS) { ProgressRoute() }
-            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}, onOpenXpHistory = { nav.navigate(Routes.XP_HISTORY) }, onOpenBadges = { nav.navigate(Routes.BADGES) }) }
+            composable(Routes.PROFILE) { ProfileRoute(onOpenSettings = {}, onOpenXpHistory = { nav.navigate(Routes.XP_HISTORY) }, onOpenBadges = { nav.navigate(Routes.BADGES) }, onOpenWatch = { nav.navigate(Routes.WATCH) }) }
+            composable(Routes.WATCH) { WatchConnectRoute(onBack = { nav.popBackStack() }, onOpenSettings = { nav.navigate(Routes.WATCH_SETTINGS) { launchSingleTop = true } }) }
+            composable(Routes.WATCH_SETTINGS) { WatchSettingsRoute(onBack = { nav.popBackStack() }) }
             composable(Routes.BADGES) { BadgesRoute(onBack = { nav.popBackStack() }) }
             composable(Routes.XP_HISTORY) { XpHistoryRoute(onBack = { nav.popBackStack() }) }
         }

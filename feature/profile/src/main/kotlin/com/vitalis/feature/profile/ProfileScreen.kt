@@ -29,6 +29,7 @@ import androidx.compose.material.icons.rounded.PieChart
 import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Terrain
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -100,7 +101,7 @@ data class ProfileUiState(
 
 
 @Composable
-fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit = {}, onOpenBadges: () -> Unit = {}) {
+fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHistory: () -> Unit = {}, onOpenBadges: () -> Unit = {}, onOpenWatch: () -> Unit = {}) {
     val tier = LevelTier.forLevel(state.level)
     Column(
         Modifier
@@ -175,6 +176,8 @@ fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHis
             )
         }
 
+        WatchEntry(onOpenWatch)
+
         VCard {
             SectionHeader("Badge", trailing = "${state.badgeCount} dari ${state.badgeTotal} · Lihat semua", onTrailing = onOpenBadges)
             state.badges.chunked(4).forEach { row ->
@@ -184,6 +187,24 @@ fun ProfileScreen(state: ProfileUiState, onOpenSettings: () -> Unit, onOpenXpHis
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun WatchEntry(onClick: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(24.dp)).background(VitalisColors.Card).clickable(onClick = onClick).padding(horizontal = 18.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Box(Modifier.size(44.dp).clip(CircleShape).background(VitalisColors.Ink), contentAlignment = Alignment.Center) {
+            Icon(Icons.Rounded.Watch, null, Modifier.size(22.dp), tint = VitalisColors.Lime)
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text("Jam tangan", style = VitalisType.Title, color = VitalisColors.Ink)
+            Text("Hubungkan jam tangan Vitalis · segera hadir", style = VitalisType.Small, color = VitalisColors.InkMuted)
+        }
+        Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, Modifier.size(20.dp), tint = VitalisColors.InkMuted)
     }
 }
 

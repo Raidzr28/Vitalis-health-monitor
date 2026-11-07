@@ -12,6 +12,11 @@ pluginManagement {
     }
 }
 
+// Auto-provisions missing JDK toolchains (e.g. Java 17) instead of failing the build.
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {

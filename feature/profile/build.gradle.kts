@@ -22,6 +22,7 @@ dependencies {
     implementation(projects.core.common)
     implementation(projects.core.designsystem)
     implementation(projects.core.domain)
+    implementation(projects.core.datastore)
     implementation(projects.data)
 
     implementation(libs.androidx.core.ktx)
